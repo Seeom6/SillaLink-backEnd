@@ -1,5 +1,5 @@
 import { Query } from '@nestjs/common';
-import { PaginationPipe } from '@Package/api/decorators/pipes/pagination.pipe';
+import { PaginationPipe } from '@Package/api/pipes/pagination.pipe';
 
 
 export function Pagination(){

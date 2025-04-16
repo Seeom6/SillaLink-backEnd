@@ -1,11 +1,12 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '@Modules/auth';
 import { SingInDto } from '../dto/request/singIn.dto';
 import { LogInValidationPipe } from '../validation/log-in.validation.pipe';
 import { LogInDto } from '../dto/request/logIn.dto';
 import { SingInValidationPipe } from '../validation/sing-in.validation.pipe';
+import {ControllerWeb} from "@Package/api";
 
-@Controller('website/auth')
+@ControllerWeb({prefix: "auth"})
 export class AuthController {
    constructor(
       private readonly authService: AuthService,

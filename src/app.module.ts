@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { EnvConfigModule } from '@Package/config';
+import {EnvConfigModule, WinstonLogger} from '@Package/config';
 import { MongoConnection } from '@Package/database/mongodb';
 import {UserModule} from "@Modules/user";
 import {AuthModule} from "@Modules/auth/auth.module";
@@ -9,7 +9,8 @@ import {AuthModule} from "@Modules/auth/auth.module";
     EnvConfigModule,
     UserModule,
     AuthModule,
-    MongoConnection
+    MongoConnection,
+    WinstonLogger
   ],
 })
 export class AppModule {

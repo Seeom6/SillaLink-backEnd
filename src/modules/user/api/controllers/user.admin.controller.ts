@@ -1,23 +1,22 @@
 import { Body, Get, Param, Patch, Post } from '@nestjs/common';
-import { AuthController, IPagination, Pagination } from '@Package/api';
+import {AuthControllerAdmin, IPagination, Pagination, AllowRole} from '@Package/api';
 import { CreateUserDto } from '../dto/request/create-user.dto';
-import { UserService } from "../../services/user.service"
+import {UserRole, UserService} from "@Modules/user"
 
-@AuthController({
+@AuthControllerAdmin({
    prefix: 'users',
 })
-export class UserController {
+export class UserAdminController {
    constructor(
       private readonly UserService: UserService
    ){}
-
-
 
    @Post("")
    async create(@Body() data: CreateUserDto){
       return await this.UserService.createUser(data)
    }
 
+   @AllowRole(UserRole.ADMIN)
    @Get("")
    async getAllUsers(@Pagination() pagination: IPagination){
       return await this.UserService.getAllUsers(pagination)

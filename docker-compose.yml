@@ -4,12 +4,13 @@ services:
     mongodb:
       image: mongo:8.0.0
       restart: always
+      container_name: silla_mongo
       ports: 
         - 27027:27017
       environment:
-        MONGO_INITDB_ROOT_USERNAME: silla_like
-        MONGO_INITDB_ROOT_PASSWORD: silla_like
-        # MONGO_INITDB_DATABASE: silla_Like
+        MONGO_INITDB_ROOT_USERNAME: silla_link
+        MONGO_INITDB_ROOT_PASSWORD: silla_link
+#        MONGO_INITDB_DATABASE: silla_link
       volumes:
         - silladata:/data/db
 

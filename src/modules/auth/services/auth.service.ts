@@ -5,7 +5,7 @@ import { HashService, UserPayload } from '@Package/auth';
 
 import { SingInDto } from '../api/dto/request/singIn.dto';
 import { LogInDto } from '../api/dto/request/logIn.dto';
-import { User, UserService } from '@Modules/user';
+import {User, UserDocument, UserService} from '@Modules/user';
 import { AuthError } from './auth.error';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class AuthService {
       }
 
       const hashedPassword = await HashService.hashPassword(userSignInInfo.password);
-      const user: User = await this.userService.createUser({
+      const user: UserDocument = await this.userService.createUser({
          ...userSignInInfo,
          password: hashedPassword
       });
