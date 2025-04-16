@@ -1,0 +1,6 @@
+export enum CodeErrors {
+  VALIDATION_ERROR = 4000,
+  SERVER_ERROR = 50000,
+
+  USER_ALREADY_IN_USE = 100001
+}
