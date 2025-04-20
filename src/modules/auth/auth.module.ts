@@ -7,6 +7,7 @@ import { UserModule } from 'src/modules/user/user.module';
 import { JWTModule } from '@Package/auth/jwt';
 import { JWTStrategy } from '@Package/auth/passport/strategy/jwt.strategy';
 import {AuthError} from "@Modules/auth/services/auth.error";
+import {MailService} from "@Package/services";
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import {AuthError} from "@Modules/auth/services/auth.error";
     JWTModule
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthError, JWTStrategy],
+  providers: [AuthService, AuthError, JWTStrategy, MailService],
   exports: [JWTStrategy, PassportModule]
 })
 export class AuthModule {}

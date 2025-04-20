@@ -1,7 +1,7 @@
 import { Body, Get, Param, Patch, Post } from '@nestjs/common';
 import {AuthControllerAdmin, IPagination, Pagination, AllowRole} from '@Package/api';
 import { CreateUserDto } from '../dto/request/create-user.dto';
-import {UserRole, UserService} from "@Modules/user"
+import {User, UserRole, UserService} from "@Modules/user"
 
 @AuthControllerAdmin({
    prefix: 'users',

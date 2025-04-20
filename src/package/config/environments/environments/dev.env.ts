@@ -3,44 +3,28 @@ import { IDatabaseEnv } from '../interfaces/database.inteface';
 import { IAppEnv } from '../interfaces/app.interface';
 import { IBaseEnv } from '../interfaces/base.interface';
 import { IJWTEnv } from '@Package/config/environments/interfaces/jwt.interface';
-
-export interface IAppDevEnv extends IAppEnv{
-}
-
-export  interface IDatabaseDevEnv extends IDatabaseEnv {
-  password: string;
-  username: string;
-  name: string
-}
-
-export interface IJWTDevEnv extends IJWTEnv {}
+import { MailConfig } from '../interfaces/email.interface';
+import { IRedisEnv } from '../interfaces/redis.interface';
 
 export interface IDevEnv extends IBaseEnv {
-  app: IAppDevEnv,
-  database?: IDatabaseDevEnv;
-  mongodb?: IDatabaseDevEnv;
-  jwt: IJWTDevEnv;
+  app: IAppEnv,
+  mongodb: IDatabaseEnv;
+  jwt: IJWTEnv;
+  mail: MailConfig
+  redis: IRedisEnv
 }
 
-export const GetDevEnv = ():IDevEnv=>({
+export const GetDevEnv = (): IDevEnv => ({
   app: {
     host: process.env.HOST,
     name: process.env.NAME,
     port: +process.env.PORT
-  },
-  database: {
-    host: process.env.DB_HOST,
-    port: +process.env.DB_PORT,
-    password: process.env.DB_PASSWORD,
-    username: process.env.DB_USERNAME,
-    name: process.env.DB_NAME,
   },
   mongodb: {
     host: process.env.MONGODB_HOST,
     port: +process.env.MONGODB_PORT,
     password: process.env.MONGODB_PASSWORD,
     username: process.env.MONGODB_USERNAME,
-    url: process.env.MONGODB_URL,
     name: process.env.MONGODB_NAME,
   },
   jwt: {
@@ -48,6 +32,20 @@ export const GetDevEnv = ():IDevEnv=>({
     jwtRefreshToken: process.env.JWT_REFRESH_SECRET,
     jwtExpiredRefresh: process.env.JWT_EXPIRED_REFRESH,
     jwtExpiredAccess: process.env.JWT_EXPIRED_ACCESS
+  },
+  mail: {
+    host: process.env.MAIL_HOST, 
+    port: +process.env.MAIL_PORT,
+    user: process.env.MAIL_USER,
+    password: process.env.MAIL_PASS,
+    from: process.env.MAIL_FROM_NAME,
+  },
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: +process.env.REDIS_PORT,
+    databaseIndex: +process.env.REDIS_DATABASE_INDEX,
+    password: process.env.REDIS_PASSWORD,
+    name: process.env.REDIS_NAME,
   }
 })
 

@@ -8,7 +8,7 @@ export const AppEnvConfig = ConfigModule.forRoot({
    envFilePath: [`${getCurrentEnv()}.env`],
    isGlobal: true,
    load: [()=> loadEnv()],
-   validationSchema: devValidationSchema,
+   // validationSchema: devValidationSchema(),
 })
 
 @Global()

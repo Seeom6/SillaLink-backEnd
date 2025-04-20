@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseMongoRepository } from '@Package/database/mongodb';
-import { User } from './user.schema';
+import {User, UserDocument} from './user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IPagination } from '@Package/api';
@@ -14,17 +14,12 @@ export class UserRepository extends BaseMongoRepository<User> {
     super(userModel);
   }
 
-  async findUserByEmail(email: string, throwError = true): Promise<User> {
+  async findUserByEmail(email: string, throwError = true): Promise<UserDocument> {
     const user = await this.userModel.findOne({ email });
     if (!user && throwError) {
       throw new Error('User not found');
     }
     return user;
-  }
-
-  async createUser(userInfo: Partial<User>): Promise<User> {
-    const user = new this.userModel(userInfo);
-    return user.save();
   }
 
   async findAllUsers(pagination?: IPagination): Promise<User[]> {

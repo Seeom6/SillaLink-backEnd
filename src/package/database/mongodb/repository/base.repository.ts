@@ -1,14 +1,10 @@
 import * as mongoose from "mongoose";
-import { HttpException, HttpStatus } from "@nestjs/common";
+import {MongooseBaseQueryOptions} from "mongoose";
+import {HttpException, HttpStatus} from "@nestjs/common";
 
-import { BaseMongoInterface, VDocument } from "../interface";
-import {
-  Document,
-  MongooseBaseQueryOptions,
-  MongooseUpdateQueryOptions,
-} from "mongoose";
+import {BaseMongoInterface, VDocument} from "../interface";
 import mongodb from "mongodb";
-import { IError } from "@Package/error";
+import {IError} from "@Package/error";
 
 export abstract class BaseMongoRepository<V>
   implements BaseMongoInterface<V>
@@ -18,14 +14,11 @@ export abstract class BaseMongoRepository<V>
   async create({
     doc,
     options,
-    needResult = false,
   }: {
-    doc: VDocument<V>;
+    doc: V;
     options?: mongoose.SaveOptions;
-    needResult?: boolean;
-  }): Promise<mongoose.Require_id<VDocument<V>>["_id"]> {
-    const result = await new this.entityModel(doc).save(options);
-    return needResult ? result : result._id;
+  }): Promise<VDocument<V>> {
+    return await new this.entityModel(doc).save(options) as unknown as VDocument<V>;
   }
 
   async countDocuments({
@@ -35,17 +28,17 @@ export abstract class BaseMongoRepository<V>
     filter?: mongoose.RootFilterQuery<VDocument<V>>;
     options?: (mongodb.CountOptions & MongooseBaseQueryOptions<VDocument<V>>) | null;
   }) {
-    return await this.entityModel.countDocuments(filter, options);
+    return this.entityModel.countDocuments(filter, options);
   }
 
-  async aggregate({
+  async aggregate<T = any>({
     pipeline,
     options,
   }: {
     pipeline?: mongoose.PipelineStage[];
     options?: mongoose.AggregateOptions;
   }) {
-    return this.entityModel.aggregate(pipeline, options);
+    return this.entityModel.aggregate(pipeline, options) as unknown as T[] ;
   }
 
   async find({

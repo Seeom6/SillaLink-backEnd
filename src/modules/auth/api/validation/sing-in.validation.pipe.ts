@@ -6,7 +6,7 @@ import { SingInDto } from '../dto/request/singIn.dto';
 export class SingInValidationPipe extends BaseValidationPipe<SingInDto> {
   constructor() {
     const schema = z.object({
-      fistName: z.string(),
+      firstName: z.string(),
       lastName: z.string(),
       email: z.string().email(),
       password: z.string(),

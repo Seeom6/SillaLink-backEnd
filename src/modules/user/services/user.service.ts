@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../database/user.repository';
+import { UserRepository } from '../entity/user.repository';
 import { IPagination } from '@Package/api';
+import { User } from '../entity/user.schema';
+import { CreateUserDto } from '../api/dto/request/create-user.dto';
+import {ClientSession} from "mongoose";
 
 @Injectable()
 export class UserService {
@@ -14,8 +17,11 @@ export class UserService {
     return await this.userRepository.findUserByEmail(email, throwError);
   }
 
-  async createUser(userInfo){
-    return await this.userRepository.createUser(userInfo);
+  async createUser(userInfo: CreateUserDto, options?: {session?: ClientSession}){
+    return await this.userRepository.create({
+      doc: {...userInfo} as User,
+      options
+    });
   }
 
   async getAllUsers(

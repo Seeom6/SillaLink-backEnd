@@ -12,7 +12,7 @@ import { IError } from "@Package/error";
 export type VDocument<V> = V & Document 
 
 export interface BaseMongoInterface<V> {
-  create({ doc, options }: { doc: V; options?: mongoose.SaveOptions });
+  create({ doc, options }: { doc: V; options?: mongoose.SaveOptions }): Promise<VDocument<V>>;
 
   countDocuments({
     filter,
@@ -20,15 +20,15 @@ export interface BaseMongoInterface<V> {
   }: {
     filter?: RootFilterQuery<VDocument<V>>;
     options?: (mongodb.CountOptions & MongooseBaseQueryOptions<VDocument<V>>) | null;
-  });
+  }) ;
 
-  aggregate({
+  aggregate<T = any>({
     pipeline,
     options,
   }: {
     pipeline?: mongoose.PipelineStage[];
     options?: mongoose.AggregateOptions;
-  });
+  }): Promise<T[]>;
 
   find({
     filter,

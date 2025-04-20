@@ -1,18 +1,75 @@
 version: '3'
 
 services:
+    app:
+      build: .
+      ports:
+        - "5000:5000"
+      environment:
+        - NODE_ENV=development
+        - MONGODB_HOST=mongodb
+        - MONGODB_PORT=27017
+        - MONGODB_USERNAME=silla_link
+        - MONGODB_PASSWORD=silla_link
+        - MONGODB_NAME=silla_link
+      depends_on:
+        mongodb:
+          condition: service_healthy
+        redis:
+          condition: service_healthy
+      networks:
+        - app-network
+
     mongodb:
       image: mongo:8.0.0
+      container_name: silla_link_mongodb
       restart: always
-      container_name: silla_mongo
       ports: 
-        - 27027:27017
+        - "27027:27017"
       environment:
         MONGO_INITDB_ROOT_USERNAME: silla_link
         MONGO_INITDB_ROOT_PASSWORD: silla_link
-#        MONGO_INITDB_DATABASE: silla_link
+        MONGO_INITDB_DATABASE: silla_link
+      command: [
+        "--replSet", "rs0",
+        "--bind_ip_all",
+        "--port", "27017",
+        "--keyFile", "/etc/mongo-keyfile"
+      ]
       volumes:
-        - silladata:/data/db
+        - mongodata:/data/db
+        - ./mongo-keyfile:/etc/mongo-keyfile:ro
+      networks:
+        - app-network
+      # healthcheck:
+      #   test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      #   interval: 10s
+      #   timeout: 10s
+      #   retries: 5
+      #   start_period: 40s
+
+    redis:
+      image: redis:7.2
+      container_name: silla_link_redis
+      restart: always
+      ports:
+        - "6389:6379"
+      volumes:
+        - redisdata:/data
+      command: redis-server --appendonly yes
+      networks:
+        - app-network
+      healthcheck:
+        test: ["CMD", "redis-cli", "ping"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+        start_period: 20s
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
-  silladata:
+  mongodata:
+  redisdata:

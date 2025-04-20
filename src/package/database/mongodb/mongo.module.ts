@@ -16,11 +16,14 @@ import * as console from "node:console";
                 const password: string = env.get('mongodb.password');
                 const database: string = env.get('mongodb.name');
 
-                const uri = username && password
-                    ? `mongodb://${username}:${password}@${host}:${port}/${database}?authSource=admin`
-                    : `mongodb://${host}:${port}/${database}?authSource=admin`;
+                // const uri = username && password
+                //     ? `mongodb://${username}:${password}@${host}:${port}/${database}?authSource=admin&replicaSet=rs0`
+                //     : `mongodb://${host}:${port}/${database}?authSource=admin&replicaSet=rs0`;
+
+                const uri = `mongodb://${host}:27017/${database}`;
 
                 const logger = new Logger('MongoDB');
+                logger.verbose('MongoDB URI:', uri);
                 return {
                     uri,
                     connectionFactory: (connection: Connection, name: string) => {

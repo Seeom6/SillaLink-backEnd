@@ -1,6 +1,6 @@
 import {applyDecorators, Controller, UseGuards, UseInterceptors} from '@nestjs/common';
 import { JwtAuthGuard } from '@Package/auth';
-import { PathPrefixEnum } from "@Package/share";
+import { PathPrefixEnum } from "@Package/shared";
 import { ResponseInterceptor } from "@Package/api";
 
 export function AuthControllerWeb(options: { prefix: string }){
