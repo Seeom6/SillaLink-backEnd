@@ -29,6 +29,11 @@ export class AuthController {
    async requestPasswordReset(@Body(RequestPasswordResetValidationPipe) body: { email: string }) {
       return await this.authService.requestPasswordReset(body.email);
    }
+
+   @Post('reset-password')
+   async resetPassword(@Body(ResetPasswordValidationPipe) body: { email: string; otp: string; newPassword: string }) {
+      return await this.authService.resetPassword(body.email, body.otp, body.newPassword);
+   }
 }
 
 @AuthControllerWeb({prefix: "auth"})
@@ -40,11 +45,6 @@ export class AuthControllerWithToken {
    @Post('verify-otp')
    async verifyOtp(@User() user: UserPayload, @Body() body: { otp: string }) {
       return await this.authService.verifyOtp(user.email, body.otp);
-   }
-
-   @Post('reset-password')
-   async resetPassword(@User() user: UserPayload, @Body(ResetPasswordValidationPipe) body: { newPassword: string }) {
-      return await this.authService.resetPassword(user.email, body.newPassword);
    }
 }
 

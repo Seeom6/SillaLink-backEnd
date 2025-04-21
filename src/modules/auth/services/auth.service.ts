@@ -126,36 +126,37 @@ export class AuthService {
       const user = await this.userService.findUserByEmail(email, false);
       if (!user) {
          // Don't reveal if user exists or not
-         return { message: 'If an account exists with this email, you will receive a password reset link' };
+         return { message: 'If an account exists with this email, you will receive a password reset OTP' };
       }
 
-      const resetToken = this.jwtService.sign(
-         { email, type: 'password_reset' },
-         { expiresIn: '15m' }
-      );
+      const otp = generateOTP();
+      await this.redisService.set(`reset:${email}`, otp, 900); // 15 minutes
+      await this.mailService.sendPasswordResetEmail(email, otp);
 
-      await this.redisService.set(`reset:${email}`, resetToken, 90000000); // 15 minutes
-      await this.mailService.sendPasswordResetEmail(email, resetToken);
-
-      return { message: 'If an account exists with this email, you will receive a password reset link' };
+      return { message: 'If an account exists with this email, you will receive a password reset OTP' };
    }
 
-   async resetPassword(email: string, newPassword: string): Promise<{ message: string }> {
+   async resetPassword(email: string, otp: string, newPassword: string): Promise<{ message: string }> {
       try {
-         const user = await this.userService.findUserByEmail(email, false);
-         if (!user) {
-            this.authError.invalidCredentials();
+         const storedOtp = await this.redisService.get<string>(`reset:${email}`);
+         if (!storedOtp) {
+            this.authError.otpExpiredOrNotFound();
+         }
+
+         if (storedOtp !== otp) {
+            this.authError.invalidOtp();
          }
 
          const hashedPassword = await HashService.hashPassword(newPassword);
          await this.userService.updateUserByEmail(email, { password: hashedPassword });
+         await this.redisService.delete(`reset:${email}`);
 
          return { message: 'Password has been reset successfully' };
       } catch (error) {
          if (error instanceof AppError) {
             throw error;
          }
-         this.authError.invalidCredentials();
+         this.authError.otpVerificationFailed();
       }
    }
 }
