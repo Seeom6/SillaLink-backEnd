@@ -5,6 +5,8 @@ import {UserModule} from "@Modules/user";
 import {AuthModule} from "@Modules/auth/auth.module";
 import { RedisModule } from '@Package/cache/redis/redis.module';
 import { EmailModule } from '@Package/services/email/email.module';
+import { SeederModule } from '@Package/seeder';
+
 @Module({
   imports: [
     EnvConfigModule,
@@ -13,7 +15,8 @@ import { EmailModule } from '@Package/services/email/email.module';
     MongoConnection,
     WinstonLogger,
     RedisModule,
-    EmailModule
+    EmailModule,
+    // SeederModule
   ],
 })
 export class AppModule {

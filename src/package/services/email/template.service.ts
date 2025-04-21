@@ -11,7 +11,12 @@ export class EmailTemplateService {
     }
 
     async getSigninTemplate(otp: string): Promise<string> {
-        return this.processTemplate('signin.html', { otp });
+        return this.processTemplate('otp.html', { otp });
+    }
+
+    async getPasswordResetTemplate(resetToken: string): Promise<string> {
+        const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+        return this.processTemplate('reset-password.html', { resetLink });
     }
 
     private async processTemplate(templateName: string, data: Record<string, string>): Promise<string> {

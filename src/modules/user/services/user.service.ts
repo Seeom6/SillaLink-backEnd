@@ -29,4 +29,12 @@ export class UserService {
   ) {
     return this.userRepository.findAllUsers(pagination);
   }
+
+  async updateUserByEmail(email: string, update: Partial<User>) {
+    return await this.userRepository.findOneAndUpdate({
+      filter: { email },
+      update,
+      options: { new: true }
+    });
+  }
 }

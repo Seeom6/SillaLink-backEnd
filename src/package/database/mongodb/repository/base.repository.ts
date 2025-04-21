@@ -79,4 +79,19 @@ export abstract class BaseMongoRepository<V>
     return result as VDocument<V>;
   }
 
+  async findOneAndUpdate({
+    filter,
+    update,
+    options,
+  }: {
+    filter: mongoose.FilterQuery<VDocument<V>>;
+    update: mongoose.UpdateQuery<VDocument<V>>;
+    options?: mongoose.QueryOptions<VDocument<V>>;
+  }): Promise<VDocument<V>> {
+    return await this.entityModel.findOneAndUpdate(filter, update, {
+      ...options,
+      new: true,
+      lean: true,
+    }) as VDocument<V>;
+  }
 }

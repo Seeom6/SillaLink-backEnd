@@ -16,8 +16,7 @@ import { EnvConfigModule, EnvironmentService } from '@Package/config/environment
         const port = configService.get('redis.port');
         const password = configService.get('redis.password');
         const db = configService.get('redis.databaseIndex');
-
-        // Create Redis URL with credentials if password exists
+        console.log(host, port, password, db)
         const redisUrl = password 
           ? `redis://:${password}@${host}:${port}/${db}`
           : `redis://${host}:${port}/${db}`;

@@ -1,16 +1,17 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
+import { Connection } from 'mongoose';
+
 import { EnvironmentService } from '@Package/config';
 import { HashService, UserPayload } from '@Package/auth';
 import { RedisService } from '@Package/cache/redis/redis.service';
 import { generateOTP, MailService } from '@Package/services';
-
+import { AppError } from '@Package/error/app.error';
 import { SingInDto } from '../api/dto/request/singIn.dto';
 import { LogInDto } from '../api/dto/request/logIn.dto';
-import {User, UserDocument, UserService} from '@Modules/user';
+import { UserService} from '@Modules/user';
 import { AuthError } from './auth.error';
-import { InjectConnection } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
 
 @Injectable()
 export class AuthService {
@@ -45,16 +46,16 @@ export class AuthService {
          const userPayload: UserPayload = {
             email: user.email,
             id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName
+            role: user.role
          };
    
          token = this.jwtService.sign(userPayload);
          const otp = generateOTP();
    
-         await this.redisService.set(token, otp, 300); 
+         await this.redisService.set(`otp:${user.email}`, otp, 30000000); 
    
          await this.mailService.sendSingInOTP(user.email, otp);
+         console.log("OTP has been sent to your email")
       })
 
       return {
@@ -67,7 +68,7 @@ export class AuthService {
       const user = await this.userService.findUserByEmail(logInInfo.email, false);
       
       if(!user) {
-         throw new UnauthorizedException('Invalid credentials');
+         this.authError.invalidCredentials();
       }
 
       const isPasswordValid = await HashService.comparePassword(
@@ -76,14 +77,13 @@ export class AuthService {
       );
 
       if(!isPasswordValid) {
-         throw new UnauthorizedException('Invalid credentials');
+         this.authError.invalidCredentials();
       }
 
       const userPayload: UserPayload = {
          email: user.email,
          id: user.id,
-         firstName: user.firstName,
-         lastName: user.lastName
+         role: user.role
       };
 
       const accessToken = this.jwtService.sign(userPayload);
@@ -93,10 +93,69 @@ export class AuthService {
          user: {
             id: user.id,
             email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName
+            role: user.role
          },
          message: 'OTP has been sent to your email'
       };
+   }
+
+   async verifyOtp(email: string, otp: string): Promise<{ message: string }> {
+      try {    
+         const storedOtp = await this.redisService.get<string>(`otp:${email}`);
+         if (!storedOtp) {
+            this.authError.otpExpiredOrNotFound();
+         }
+
+         if (storedOtp !== otp) {
+            this.authError.invalidOtp();
+         }
+
+         await this.redisService.delete(`otp:${email}`);
+         await this.userService.updateUserByEmail(email, { isActive: true });
+
+         return { message: 'OTP verified successfully' };
+      } catch (error) {
+         if (error instanceof AppError) {
+            throw error;
+         }
+         this.authError.otpVerificationFailed();
+      }
+   }
+
+   async requestPasswordReset(email: string): Promise<{ message: string }> {
+      const user = await this.userService.findUserByEmail(email, false);
+      if (!user) {
+         // Don't reveal if user exists or not
+         return { message: 'If an account exists with this email, you will receive a password reset link' };
+      }
+
+      const resetToken = this.jwtService.sign(
+         { email, type: 'password_reset' },
+         { expiresIn: '15m' }
+      );
+
+      await this.redisService.set(`reset:${email}`, resetToken, 90000000); // 15 minutes
+      await this.mailService.sendPasswordResetEmail(email, resetToken);
+
+      return { message: 'If an account exists with this email, you will receive a password reset link' };
+   }
+
+   async resetPassword(email: string, newPassword: string): Promise<{ message: string }> {
+      try {
+         const user = await this.userService.findUserByEmail(email, false);
+         if (!user) {
+            this.authError.invalidCredentials();
+         }
+
+         const hashedPassword = await HashService.hashPassword(newPassword);
+         await this.userService.updateUserByEmail(email, { password: hashedPassword });
+
+         return { message: 'Password has been reset successfully' };
+      } catch (error) {
+         if (error instanceof AppError) {
+            throw error;
+         }
+         this.authError.invalidCredentials();
+      }
    }
 }
