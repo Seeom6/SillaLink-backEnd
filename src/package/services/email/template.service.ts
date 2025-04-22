@@ -14,8 +14,8 @@ export class EmailTemplateService {
         return this.processTemplate('otp.html', { otp });
     }
 
-    async getPasswordResetTemplate(resetToken: string): Promise<string> {
-        const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    async getPasswordResetTemplate(token: string): Promise<string> {
+        const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
         return this.processTemplate('reset-password.html', { resetLink });
     }
 

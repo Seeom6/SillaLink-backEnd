@@ -51,8 +51,8 @@ export class MailService {
         return await this.sendMail(to, "OTP for verification", html);
     }
 
-    async sendPasswordResetEmail(to: string, resetToken: string) {
-        const html = await this.emailTemplateService.getPasswordResetTemplate(resetToken);
+    async sendPasswordResetEmail(to: string, otp: string) {
+        const html = await this.emailTemplateService.getPasswordResetTemplate(otp);
         return await this.sendMail(to, "Reset Your Password", html);
     }
 }
