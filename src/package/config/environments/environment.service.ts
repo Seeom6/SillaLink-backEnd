@@ -46,7 +46,7 @@ export type LeafTypes<T, S extends string> = S extends `${infer T1}.${infer T2}`
 export class EnvironmentService {
   constructor(private configService: ConfigService) {
   }
-    public get<T extends Leaves<IDevEnv>>(path: T): LeafTypes<IDevEnv,T>{
-      return this.configService.get(path);
+    public get<T extends Leaves<IDevEnv>>(path: T, insteadValue?: LeafTypes<IDevEnv, T>): LeafTypes<IDevEnv, T> {
+      return this.configService.get(path) ?? insteadValue;
   }
 }

@@ -5,6 +5,7 @@ import { IBaseEnv } from '../interfaces/base.interface';
 import { IJWTEnv } from '@Package/config/environments/interfaces/jwt.interface';
 import { MailConfig } from '../interfaces/email.interface';
 import { IRedisEnv } from '../interfaces/redis.interface';
+import { IFileEnv } from '../interfaces/file.interface';
 
 export interface IDevEnv extends IBaseEnv {
   app: IAppEnv,
@@ -12,6 +13,7 @@ export interface IDevEnv extends IBaseEnv {
   jwt: IJWTEnv;
   mail: MailConfig
   redis: IRedisEnv
+  file: IFileEnv
 }
 
 export const GetDevEnv = (): IDevEnv => ({
@@ -46,6 +48,10 @@ export const GetDevEnv = (): IDevEnv => ({
     databaseIndex: +process.env.REDIS_DATABASE_INDEX,
     password: process.env.REDIS_PASSWORD,
     name: process.env.REDIS_NAME,
+  },
+  file: {
+    maxFileSize: +process.env.MAX_FILE_SIZE,
+    baseUrl: process.env.BASE_URL,
   }
 })
 

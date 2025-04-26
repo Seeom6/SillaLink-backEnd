@@ -5,8 +5,8 @@ import {UserModule} from "@Modules/user";
 import {AuthModule} from "@Modules/auth/auth.module";
 import { RedisModule } from '@Package/cache/redis/redis.module';
 import { EmailModule } from '@Package/services/email/email.module';
-import { SeederModule } from '@Package/seeder';
-
+import { FileUploadModule } from '@Package/file';
+import { ServiceStaticModule } from '@Package/file';
 @Module({
   imports: [
     EnvConfigModule,
@@ -16,6 +16,8 @@ import { SeederModule } from '@Package/seeder';
     WinstonLogger,
     RedisModule,
     EmailModule,
+    FileUploadModule,
+    ServiceStaticModule
     // SeederModule
   ],
 })
