@@ -1,13 +1,14 @@
-import { IError, IResponseError } from '@Package/error/error.interface';
+import { IError } from '@Package/error/error.interface';
 
-export class AppError implements IError {
+export class AppError extends Error implements IError {
   public readonly code: number;
-  public readonly message: string;
   public readonly errorType: string;
 
   constructor(error: IError) {
+    super(error.message as string);
     this.code = error.code;
-    this.message = error.message as string;
     this.errorType = error.errorType;
+    Object.setPrototypeOf(this, AppError.prototype);
+    Error.captureStackTrace(this, this.constructor);
   }
 }

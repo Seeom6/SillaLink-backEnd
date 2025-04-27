@@ -1,52 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { ProjectRepository } from '../database/project.repository';
-import { CreateProjectDto } from '../api/dto/request/create-project.dto';
-import { UpdateProjectDto } from '../api/dto/request/update-project.dto';
-import { ProjectDocument } from '../database/project.schema';
-import { ProjectError, ProjectErrorCode } from './project.error';
+import { Injectable } from "@nestjs/common";
+import { CreateProjectDto } from "../api/dto/request/create-project.dto";
+import { ProjectRepository } from "../database/project.repository";
+import { ProjectDocument } from "../database/project.schema";
 
 @Injectable()
-export class ProjectService {
-  constructor(
-    private readonly projectRepository: ProjectRepository,
-    private readonly projectError: ProjectError,
-  ) {}
+export class ProjectServiceWeb {
+  constructor(private readonly projectRepository: ProjectRepository) { }
 
-  async create(createProjectDto: CreateProjectDto): Promise<ProjectDocument> {
-    const existingProject = await this.projectRepository.findByName(createProjectDto.name);
-    if (existingProject) {
-      this.projectError.throw(ProjectErrorCode.PROJECT_ALREADY_EXISTS);
-    }
-    return this.projectRepository.create({
-      ...createProjectDto,
-    });
+  async getAll(){
   }
-
-  async findOne(id: string): Promise<ProjectDocument> {
-    const project = await this.projectRepository.findOne(id);
-    if (!project) {
-      this.projectError.throw(ProjectErrorCode.PROJECT_NOT_FOUND);
-    }
-    return project;
-  }
-
-  async update(id: string, updateProjectDto: UpdateProjectDto): Promise<ProjectDocument> {
-    // Verify project exists and user has access
-    await this.findOne(id);
-
-    // If name is being updated, check if new name is unique
-    if (updateProjectDto.name) {
-      const existingProject = await this.projectRepository.findByName(updateProjectDto.name);
-      if (existingProject && existingProject._id.toString() !== id) {
-        this.projectError.throw(ProjectErrorCode.PROJECT_ALREADY_EXISTS);
-      }
-    }
-
-    const project = await this.projectRepository.update(id, updateProjectDto);
-    if (!project) {
-      this.projectError.throw(ProjectErrorCode.PROJECT_NOT_FOUND);
-    }
-    return project;
-  }
-
-} 
+}

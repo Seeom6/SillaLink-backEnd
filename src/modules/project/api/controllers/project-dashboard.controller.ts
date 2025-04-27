@@ -1,4 +1,4 @@
-import { ProjectService } from "@Modules/project/services/project.service";
+import { ProjectService } from "@Modules/project/services/project.dashboard.service";
 import { Body, Post } from "@nestjs/common";
 import { AuthControllerAdmin } from "@Package/api";
 import { CreateProjectDto } from "../dto/request/create-project.dto";

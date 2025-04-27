@@ -8,7 +8,7 @@ export class AppExceptionFilter implements ExceptionFilter {
   catch(exception: AppError, host: ArgumentsHost): void {
     const response: Response = host.switchToHttp().getResponse();
     const request: Request = host.switchToHttp().getRequest();
-
+    
     const errorResponse: IResponseError = {
       path: request.path,
       time: new Date(),
