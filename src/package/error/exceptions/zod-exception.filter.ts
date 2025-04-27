@@ -1,24 +1,34 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger, NotFoundException } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, Logger } from '@nestjs/common';
 import { Response, Request } from 'express';
-import { IResponseError } from '@Package/error';
 import { ZodError } from 'zod';
-import {CodeErrors} from "@Modules/shared";
+import { IResponseError } from '@Package/error/error.interface'; 
+import { CodeErrors } from '@Modules/shared';
 
 @Catch(ZodError)
-export class ZodExceptionFilter implements ExceptionFilter{
-  catch(exception: ZodError, host: ArgumentsHost): any {
+export class ZodExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(ZodExceptionFilter.name, { timestamp: false });
+
+  catch(exception: ZodError, host: ArgumentsHost): void {
     const response: Response = host.switchToHttp().getResponse();
     const request: Request = host.switchToHttp().getRequest();
-    const logger = new Logger(ZodError.name, {timestamp: false})
-    logger.error(exception.issues)
-    let error: IResponseError = {
+
+    const firstIssue = exception.issues[0];
+    const errorMessage = firstIssue.path[0] + " " + firstIssue?.message || 'Validation error';
+
+    const errorResponse: IResponseError = {
       path: request.path,
       time: new Date(),
-      message: exception.issues[0],
+      message: errorMessage,
       code: CodeErrors.VALIDATION_ERROR,
-    }
-    return response.status(400).json({
-      error: error,
+      errorType: 'VALIDATION_ERROR',
+    };
+
+    this.logger.error(`[Validation Error] ${errorMessage}`, {
+      path: request.path,
+      field: firstIssue?.path?.join('.'),
+      issues: exception.issues,
     });
+
+    response.status(400).json({ error: errorResponse });
   }
 }

@@ -1,8 +1,9 @@
 import {Module, Logger, OnModuleInit} from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { EnvConfigModule, EnvironmentService } from '@Package/config';
 import { Connection} from "mongoose";
 import * as console from "node:console";
+import { EnvironmentService } from '@Package/config';
+import { EnvConfigModule } from '@Package/config';
 
 @Module({
     imports: [

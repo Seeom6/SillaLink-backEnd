@@ -18,7 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed": "NODE_ENV=development dotenv -e development.env -- ts-node src/database/seeders/run-seeder.ts"
+    "seed": "cd seeders && NODE_ENV=development yarn start"
   },
   "dependencies": {
     "@keyv/redis": "^4.3.3",

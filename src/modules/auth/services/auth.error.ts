@@ -2,7 +2,8 @@ import { IError } from '@Package/error/error.interface';
 import { Injectable } from '@nestjs/common';
 import { AppError } from '@Package/error/app.error';
 import { CodeErrors } from '@Modules/shared';
-
+import { IServiceError } from '@Package/error/service.error.interface';
+import { ErrorFactory } from '@Package/error';
 export enum AuthErrorCode {
   USER_ALREADY_EXISTS = CodeErrors.USER_ALREADY_IN_USE,
   OTP_EXPIRED = 4001,
@@ -22,35 +23,17 @@ export const AuthErrorMessages = {
 };
 
 @Injectable()
-export class AuthError {
-  private createError(code: AuthErrorCode): IError {
-    return {
+export class AuthError implements IServiceError {
+
+  public readonly errorType = 'AUTH_ERROR';
+
+  throw(code: AuthErrorCode, context?: any): never {
+    const message = AuthErrorMessages[code] || 'Unknown auth error';
+    throw ErrorFactory.createError({
       code,
-      message: AuthErrorMessages[code],
-    };
+      message,
+      errorType: this.errorType,
+    });
   }
 
-  userAlreadyExist(): never {
-    throw new AppError(this.createError(AuthErrorCode.USER_ALREADY_EXISTS));
-  }
-
-  otpExpiredOrNotFound(): never {
-    throw new AppError(this.createError(AuthErrorCode.OTP_EXPIRED));
-  }
-
-  invalidOtp(): never {
-    throw new AppError(this.createError(AuthErrorCode.INVALID_OTP));
-  }
-
-  otpVerificationFailed(): never {
-    throw new AppError(this.createError(AuthErrorCode.OTP_VERIFICATION_FAILED));
-  }
-
-  invalidCredentials(): never {
-    throw new AppError(this.createError(AuthErrorCode.INVALID_CREDENTIALS));
-  }
-
-  invalidResetToken(): never {
-    throw new AppError(this.createError(AuthErrorCode.INVALID_RESET_TOKEN));
-  }
 }

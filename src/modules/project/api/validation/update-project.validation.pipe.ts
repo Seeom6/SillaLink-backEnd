@@ -8,7 +8,7 @@ const UpdateProjectDto = z.object({
 });
 
 @Injectable()
-export class UpdateProjectValidationPipe extends BaseValidationPipe<typeof UpdateProjectDto> {
+export class UpdateProjectValidationPipe extends BaseValidationPipe {
   constructor() {
     super(UpdateProjectDto);
   }

@@ -1,7 +1,7 @@
 import { IError } from '@Package/error/error.interface';
 import { Injectable } from '@nestjs/common';
-import { AppError } from '@Package/error/app.error';
-import { CodeErrors } from '@Modules/shared';
+import { ErrorFactory } from '@Package/error';
+import { IServiceError } from '@Package/error/service.error.interface';
 
 export enum ProjectErrorCode {
   PROJECT_NOT_FOUND = 5001,
@@ -22,35 +22,16 @@ export const ProjectErrorMessages = {
 };
 
 @Injectable()
-export class ProjectError {
-  private createError(code: ProjectErrorCode): IError {
-    return {
+export class ProjectError implements IServiceError {
+
+  public readonly errorType = 'PROJECT_ERROR';
+
+  throw(code: ProjectErrorCode, context?: any): never {
+    const message = ProjectErrorMessages[code] || 'Unknown project error';
+    throw ErrorFactory.createError({
       code,
-      message: ProjectErrorMessages[code],
-    };
-  }
-
-  projectNotFound(): never {
-    throw new AppError(this.createError(ProjectErrorCode.PROJECT_NOT_FOUND));
-  }
-
-  projectAlreadyExists(): never {
-    throw new AppError(this.createError(ProjectErrorCode.PROJECT_ALREADY_EXISTS));
-  }
-
-  invalidProjectData(): never {
-    throw new AppError(this.createError(ProjectErrorCode.INVALID_PROJECT_DATA));
-  }
-
-  unauthorizedAccess(): never {
-    throw new AppError(this.createError(ProjectErrorCode.UNAUTHORIZED_ACCESS));
-  }
-
-  memberAlreadyExists(): never {
-    throw new AppError(this.createError(ProjectErrorCode.MEMBER_ALREADY_EXISTS));
-  }
-
-  memberNotFound(): never {
-    throw new AppError(this.createError(ProjectErrorCode.MEMBER_NOT_FOUND));
+      message,
+      errorType: this.errorType,
+    });
   }
 } 

@@ -17,6 +17,9 @@ export class Project {
   @Prop({ type: [String], default: [] })
   images: string[];
 
+  @Prop({ type: String, default: '' })
+  mainImage: string;
+
   @Prop({ type: Boolean, default: false })
   isFeatured: boolean;
 

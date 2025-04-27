@@ -5,9 +5,10 @@ import {BaseValidationPipe} from "@Package/api";
 
 export class LogInValidationPipe extends BaseValidationPipe<LogInDto>{
   constructor() {
-    super(z.object({
+    const schema = z.object({
       email: z.string().email(),
       password: z.string()
-    }));
+    });
+    super(schema);
   }
 }

@@ -7,7 +7,6 @@ export class HttpExceptionFilter implements ExceptionFilter{
   catch(exception: HttpException, host: ArgumentsHost): any {
     const response: Response = host.switchToHttp().getResponse();
     const request: Request = host.switchToHttp().getRequest();
-    console.log(exception.message);
     let error: IResponseError = {
       path: request.path,
       time: new Date(),

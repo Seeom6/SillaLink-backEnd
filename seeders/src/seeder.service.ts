@@ -1,7 +1,8 @@
-import { UserDocument } from '@Modules/user/entity/user.schema';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { admin } from './data';
+import { UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export class SeederService implements OnModuleInit {
@@ -19,8 +20,7 @@ export class SeederService implements OnModuleInit {
     try {
       this.logger.log('Starting database seeding...');
 
-      // Clear existing data
-      await this.clearDatabase();
+      // await this.clearDatabase();
 
       // Seed users
       await this.seedUsers();
@@ -40,24 +40,7 @@ export class SeederService implements OnModuleInit {
 
   private async seedUsers() {
     this.logger.log('Seeding users...');
-    const users = [
-      {
-        email: 'admin@sillalink.com',
-        password: 'Admin@123',
-        firstName: 'Admin',
-        lastName: 'User',
-        role: 'admin',
-        isVerified: true,
-      },
-      {
-        email: 'user@sillalink.com',
-        password: 'User@123',
-        firstName: 'Regular',
-        lastName: 'User',
-        role: 'user',
-        isVerified: true,
-      },
-    ];
+    const users = admin.data;
 
     await this.userModel.insertMany(users);
     this.logger.log('Users seeded successfully');

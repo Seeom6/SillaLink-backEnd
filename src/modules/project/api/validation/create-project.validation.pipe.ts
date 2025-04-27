@@ -6,13 +6,14 @@ import { CreateProjectDto } from '../dto/request/create-project.dto';
 const CreateProjectSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
   description: z.string().optional(),
-  members: z.array(z.string()).optional(),
-  images: z.array(z.string()).optional(),
-  isFeatured: z.boolean().optional(),
+  members: z.array(z.string()).optional().default([]),
+  images: z.array(z.string()).optional().default([]),
+  mainImage: z.string(),
+  isFeatured: z.boolean().optional().default(false),
 });
 
 @Injectable()
-export class CreateProjectValidationPipe extends BaseValidationPipe<typeof CreateProjectSchema> {
+export class CreateProjectValidation extends BaseValidationPipe<typeof CreateProjectSchema> {
   constructor() {
     super(CreateProjectSchema);
   }

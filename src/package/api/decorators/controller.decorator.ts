@@ -25,3 +25,10 @@ export function AuthControllerAdmin(options: { prefix: string }){
     UseInterceptors(ResponseInterceptor)
   )
 }
+
+export function ControllerAdmin(options: { prefix: string }){
+  return applyDecorators(
+    Controller({path: `${PathPrefixEnum.ADMIN}/${options.prefix}`}),
+    UseInterceptors(ResponseInterceptor)
+  )
+}

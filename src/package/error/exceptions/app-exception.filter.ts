@@ -1,22 +1,27 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, NotFoundException } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
 import { Response, Request } from 'express';
-import { AppError } from '@Package/error/app.error';
-import { IResponseError } from '@Package/error';
+import { AppError } from '@Package/error';
+import { IResponseError } from '@Package/error/error.interface'; 
 
 @Catch(AppError)
-export class AppExceptionFilter implements ExceptionFilter{
-  catch(exception: AppError, host: ArgumentsHost): any {
+export class AppExceptionFilter implements ExceptionFilter {
+  catch(exception: AppError, host: ArgumentsHost): void {
     const response: Response = host.switchToHttp().getResponse();
     const request: Request = host.switchToHttp().getRequest();
-    console.log(exception.message);
-    let error: IResponseError = {
+
+    const errorResponse: IResponseError = {
       path: request.path,
       time: new Date(),
       message: exception.message,
       code: exception.code,
-    }
-    return response.status(400).json({
-      error: error,
+      errorType: exception.errorType, 
+    };
+
+    console.error(`[${new Date().toISOString()}] [${exception.errorType}] ${exception.message}`, {
+      path: request.path,
+      errorCode: exception.code,
     });
+
+    response.status(400).json({ error: errorResponse });
   }
 }
