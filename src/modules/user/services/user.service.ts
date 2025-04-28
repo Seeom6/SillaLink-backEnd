@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../entity/user.repository';
-import { IPagination } from '@Package/api';
-import { User } from '../entity/user.schema';
+import { User } from '@Modules/user';
 import { CreateUserDto } from '../api/dto/request/create-user.dto';
 import {ClientSession} from "mongoose";
+import {Pagination} from "@Package/api";
 
 @Injectable()
 export class UserService {
@@ -25,7 +25,7 @@ export class UserService {
   }
 
   async getAllUsers(
-    pagination?: IPagination,
+    pagination?: Pagination,
   ) {
     return this.userRepository.findAllUsers(pagination);
   }

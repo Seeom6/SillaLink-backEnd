@@ -1,6 +1,8 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from 'mongoose';
 import { UserRole } from "../types/role.enum";
+import { Employee, EmployeeSchema } from "./employee.schema";
+
 
 export type UserDocument = User & Document;
 
@@ -31,6 +33,9 @@ export class User {
     })
     role?: UserRole
 
+    @Prop({type: EmployeeSchema, default: null})
+    employee: Employee
+
     @Prop({
         type: String,
     })
@@ -47,3 +52,9 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.post("find",(docs)=>{
+    docs.map((doc)=>{
+        delete doc.password;
+    })
+})
