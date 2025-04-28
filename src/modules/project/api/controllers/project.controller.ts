@@ -1,16 +1,19 @@
-import { Body, Post } from "@nestjs/common";
-import { CreateProjectDto } from "../dto/request/create-project.dto";
-import { ProjectService } from "@Modules/project/services/project.dashboard.service";
-import { AuthControllerWeb } from "@Package/api";
+import { ProjectServiceWeb } from "@Modules/project/services/project.service";
+import { Get } from "@nestjs/common";
+import { ControllerWeb } from "@Package/api";
+import { GetAllProjects } from "../dto/response/get-all-porject.dto";
 
-@AuthControllerWeb({
-    prefix: "project"
+@ControllerWeb({
+    prefix: "projects"
 })
 export class ProjectController {
-    constructor(private readonly projectService: ProjectService) { }
+    constructor(private readonly projectService: ProjectServiceWeb) { }
 
-    @Post()
-    async createProject(@Body() createProjectDto: CreateProjectDto) {
-        return this.projectService.create(createProjectDto);
+    @Get("")
+    async getAllProject(){
+        const projects = await this.projectService.getAll();
+        return projects.map((project)=>{
+            return new GetAllProjects(project)
+        })
     }
 }

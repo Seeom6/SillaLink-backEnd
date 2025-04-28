@@ -2,22 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Project, ProjectDocument } from './project.schema';
-
+import { BaseMongoRepository } from '@Package/database';
 @Injectable()
-export class ProjectRepository {
+export class ProjectRepository extends BaseMongoRepository<ProjectDocument> {
   constructor(
     @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
-  ) {}
+  ) {
+    super(projectModel);
+  }
 
   async create(createProjectDto: any): Promise<ProjectDocument> {
     const createdProject = new this.projectModel(createProjectDto);
     return createdProject.save();
   }
 
-
-  async findOne(id: string): Promise<ProjectDocument> {
-    return this.projectModel.findOne({ _id: id, isDeleted: false }).exec();
-  }
 
   async findByName(name: string): Promise<ProjectDocument> {
     return this.projectModel.findOne({ name }).exec();

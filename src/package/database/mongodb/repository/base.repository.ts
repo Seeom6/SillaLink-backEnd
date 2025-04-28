@@ -60,22 +60,14 @@ export abstract class BaseMongoRepository<V>
     filter,
     projection,
     options,
-    error,
-    throwError = true,
   }: {
     filter?: mongoose.FilterQuery<VDocument<V>>;
     projection?: mongoose.ProjectionType<VDocument<V>>;
     options?: mongoose.QueryOptions<VDocument<V>>;
-    error: IError;
-    throwError?: boolean;
   }): Promise<VDocument<V>> {
     const result = await this.entityModel.findOne(filter, projection, {
       ...options,
-      lean: true,
     });
-    if (!result && throwError) {
-      throw new HttpException({ error }, HttpStatus.NOT_FOUND);
-    }
     return result as VDocument<V>;
   }
 

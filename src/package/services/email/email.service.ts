@@ -12,10 +12,6 @@ export class MailService {
     private readonly emailTemplateService: EmailTemplateService = new EmailTemplateService();
     private transporter: nodemailer.Transporter;
     constructor(private readonly env: EnvironmentService) {
-        console.log(env.get("mail.host"))
-        console.log(env.get("mail.port"))
-        console.log(env.get("mail.user"))
-        console.log(env.get("mail.password"))
         this.transporter = nodemailer.createTransport({
             host: env.get("mail.host"),
             port: Number(env.get("mail.port")) ,

@@ -1,5 +1,4 @@
 
-
 export class CreateProjectDto {
   name: string;
 
@@ -10,4 +9,6 @@ export class CreateProjectDto {
   images?: string[];
 
   isFeatured?: boolean;
+
+  link: string;
 } 

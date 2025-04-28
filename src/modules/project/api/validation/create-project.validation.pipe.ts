@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseValidationPipe } from '@Package/api';
 import { z } from 'zod';
-import { CreateProjectDto } from '../dto/request/create-project.dto';
 
 const CreateProjectSchema = z.object({
   name: z.string().min(1, 'Project name is required'),
@@ -10,6 +9,7 @@ const CreateProjectSchema = z.object({
   images: z.array(z.string()).optional().default([]),
   mainImage: z.string(),
   isFeatured: z.boolean().optional().default(false),
+  link: z.string()
 });
 
 @Injectable()

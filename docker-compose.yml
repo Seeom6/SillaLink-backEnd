@@ -27,13 +27,12 @@ services:
       ports: 
         - "27027:27017"
       environment:
-        MONGO_INITDB_ROOT_USERNAME: silla_link
-        MONGO_INITDB_ROOT_PASSWORD: silla_link
+        # MONGO_INITDB_ROOT_USERNAME: silla_link
+        # MONGO_INITDB_ROOT_PASSWORD: silla_link
         MONGO_INITDB_DATABASE: silla_link
       command: mongod --replSet rs0 --bind_ip_all
       volumes:
         - mongodata:/data/db
-        - ./mongo-keyfile:/etc/mongo-keyfile:ro
       networks:
         - app-network
       healthcheck:

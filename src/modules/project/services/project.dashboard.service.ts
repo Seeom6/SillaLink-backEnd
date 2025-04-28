@@ -4,12 +4,14 @@ import { CreateProjectDto } from '../api/dto/request/create-project.dto';
 import { UpdateProjectDto } from '../api/dto/request/update-project.dto';
 import { ProjectDocument } from '../database/project.schema';
 import { ProjectError, ProjectErrorCode } from './project.error';
+import { EnvironmentService } from '@Package/config';
 
 @Injectable()
 export class ProjectService {
   constructor(
     private readonly projectRepository: ProjectRepository,
     private readonly projectError: ProjectError,
+    private readonly envService: EnvironmentService,
   ) {}
 
   async create(createProjectDto: CreateProjectDto): Promise<void> {
@@ -23,18 +25,21 @@ export class ProjectService {
   }
 
   async findOne(id: string): Promise<ProjectDocument> {
-    const project = await this.projectRepository.findOne(id);
+    const project = await this.projectRepository.findOne({
+      filter: {
+        _id: id,
+        isDeleted: false,
+      },
+    });
     if (!project) {
       this.projectError.throw(ProjectErrorCode.PROJECT_NOT_FOUND);
     }
     return project;
   }
 
-  async update(id: string, updateProjectDto: UpdateProjectDto): Promise<ProjectDocument> {
-    // Verify project exists and user has access
+  async update(id: string, updateProjectDto: UpdateProjectDto): Promise<void> {
     await this.findOne(id);
 
-    // If name is being updated, check if new name is unique
     if (updateProjectDto.name) {
       const existingProject = await this.projectRepository.findByName(updateProjectDto.name);
       if (existingProject && existingProject._id.toString() !== id) {
@@ -46,7 +51,40 @@ export class ProjectService {
     if (!project) {
       this.projectError.throw(ProjectErrorCode.PROJECT_NOT_FOUND);
     }
-    return project;
+    return ;
   }
 
+
+  async findAll(): Promise<ProjectDocument[]> {
+    const projects = await this.projectRepository.find({
+      filter: {
+        isDeleted: false,
+      },
+    });
+    projects.forEach((project) => {
+      project.mainImage = `${this.envService.get('app.baseUrl')}/${project.mainImage}`;
+    });
+    return projects;
+  }
+
+  async getProjectById(id: string){
+    const project = await this.projectRepository.findOne({
+      filter: {
+        _id: id
+      }
+    })
+    if(!project){
+      this.projectError.throw(ProjectErrorCode.PROJECT_NOT_FOUND)
+    }
+    project.mainImage = `${this.envService.get('app.baseUrl')}/${project.mainImage}`;
+    return project
+  }
+
+  async delete(id: string): Promise<void>{
+    await this.findOne(id)
+    await this.projectRepository.update(id, {
+      isDeleted: new Date()
+    })
+    return;
+  }
 } 

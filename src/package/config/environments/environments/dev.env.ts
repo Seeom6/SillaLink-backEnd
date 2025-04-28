@@ -20,7 +20,8 @@ export const GetDevEnv = (): IDevEnv => ({
   app: {
     host: process.env.HOST,
     name: process.env.NAME,
-    port: +process.env.PORT
+    port: +process.env.PORT,
+    baseUrl: process.env.BASE_URL,
   },
   mongodb: {
     host: process.env.MONGODB_HOST,

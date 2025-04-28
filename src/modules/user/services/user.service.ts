@@ -10,7 +10,7 @@ export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
   async findById(id: string) {
-    return this.userRepository.findOne({filter: {_id: id},error: null});
+    return this.userRepository.findOne({filter: {_id: id}});
   }
 
   async findUserByEmail(email: string, throwError = true) {

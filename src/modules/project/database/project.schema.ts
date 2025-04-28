@@ -5,10 +5,13 @@ export type ProjectDocument = Project & Document;
 
 @Schema({ timestamps: true })
 export class Project {
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   name: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
+  link: string;
+
+  @Prop({ type: String, required: true })
   description: string;
 
   @Prop({ type: [String], default: [] })
@@ -28,3 +31,7 @@ export class Project {
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project); 
+
+ProjectSchema.post("find", function(doc: ProjectDocument) {
+  doc.mainImage = `${process.env.BASE_URL}/${doc.mainImage}`
+})

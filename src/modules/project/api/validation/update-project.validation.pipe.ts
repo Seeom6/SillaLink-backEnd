@@ -3,12 +3,17 @@ import { BaseValidationPipe } from '@Package/api';
 import { z } from 'zod';
 
 const UpdateProjectDto = z.object({
-  name: z.string().min(1, 'Project name is required').optional(),
+  name: z.string().min(1, 'Project name is required'),
   description: z.string().optional(),
+  members: z.array(z.string()).optional().default([]),
+  images: z.array(z.string()).optional().default([]),
+  mainImage: z.string(),
+  isFeatured: z.boolean().optional().default(false),
+  link: z.string()
 });
 
 @Injectable()
-export class UpdateProjectValidationPipe extends BaseValidationPipe {
+export class UpdateProjectValidation extends BaseValidationPipe {
   constructor() {
     super(UpdateProjectDto);
   }

@@ -11,11 +11,11 @@ export class FileUploadService {
   constructor(private readonly configService: ConfigService) {}
 
   getFileUrl(filename: string, folder: string, mediaPath: MediaPath): string {
-    return `public/media/${mediaPath}/${folder}/${filename}`;
+    return `media/${mediaPath}/${folder}/${filename}`;
   }
 
   getFilePath(filename: string): string {
-    return join(process.cwd(), 'public', 'media', filename);
+    return join(process.cwd(), 'media', filename);
   }
 
   async deleteFile(filename: string): Promise<void> {
