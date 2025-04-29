@@ -1,7 +1,7 @@
 import { PositionEnum } from "@Modules/employee/databases/position.enum";
-import { IPaginationRequest} from "@Package/api";
+import { PaginationRequest} from "@Package/api";
 
-export class GetAllEmployee extends IPaginationRequest {
+export class GetAllEmployee extends PaginationRequest {
     name?: string;
     position?: PositionEnum
 }

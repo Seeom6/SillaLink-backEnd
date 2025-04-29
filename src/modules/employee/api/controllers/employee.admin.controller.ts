@@ -1,5 +1,5 @@
 import {Body, Get, Post, Query} from '@nestjs/common';
-import {AuthControllerAdmin, getPagination, Pagination} from '@Package/api';
+import {AuthControllerAdmin, parseQuery, Pagination} from '@Package/api';
 import { EmployeeService } from '@Modules/employee/services/employee.service';
 import { CreateEmployeeValidation } from '../validation/create-employee.validation';
 import { CreateEmployee } from '../dto/requests/create-employee.dto';
@@ -26,7 +26,7 @@ export class EmployeeAdminController {
     async getAll(
         @Query() query: GetAllEmployee
     ){
-        const pagination: Pagination = getPagination(query)
+        const {pagination, myQuery} = parseQuery(query)
         const employee = await this.employeeService.getAll(query, pagination)
         return employee.map(p => new GetAllEmployeeDto(p))
     }

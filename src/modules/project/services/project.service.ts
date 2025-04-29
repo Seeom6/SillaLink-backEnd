@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { CreateProjectDto } from "../api/dto/request/create-project.dto";
 import { ProjectRepository } from "../database/project.repository";
 import { ProjectDocument } from "../database/project.schema";
 import { EnvironmentService } from "@Package/config";
@@ -31,6 +30,10 @@ export class ProjectServiceWeb {
     })
     projects.forEach((project) => {
       project.mainImage = `${this.envService.get('app.baseUrl')}/${project.mainImage}`;
+      project.images = project.images.map((image)=>{
+        console.log(image)
+        return `${this.envService.get('app.baseUrl')}/${image}`
+      })
     });
     return projects;
   }

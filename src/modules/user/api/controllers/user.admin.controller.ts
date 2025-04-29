@@ -1,5 +1,5 @@
 import {Body, Get, Param, Patch, Post, Query} from '@nestjs/common';
-import {AuthControllerAdmin, Pagination, AllowRole, getPagination} from '@Package/api';
+import {AuthControllerAdmin, Pagination, AllowRole, parseQuery} from '@Package/api';
 import { CreateUserDto } from '../dto/request/create-user.dto';
 import {User, UserRole, UserService} from "@Modules/user"
 import {GetAllUserDto} from "@Modules/user/api/dto/request/get-all-user.dto";
@@ -20,7 +20,7 @@ export class UserAdminController {
    @AllowRole(UserRole.ADMIN)
    @Get("")
    async getAllUsers(@Query() query: GetAllUserDto){
-      const pagination: Pagination = getPagination(query)
+      const {pagination, myQuery} = parseQuery(query)
       return await this.UserService.getAllUsers(pagination)
    }
 

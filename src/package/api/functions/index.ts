@@ -1,1 +1,1 @@
-export * from "./get-pagination"
+export * from "./parse-query"

@@ -1,2 +1,2 @@
 export * from "./pagination.interface"
-export * from "./get-query.type"
+export * from "./query.type"

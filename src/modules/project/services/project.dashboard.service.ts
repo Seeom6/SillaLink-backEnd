@@ -63,6 +63,10 @@ export class ProjectService {
     });
     projects.forEach((project) => {
       project.mainImage = `${this.envService.get('app.baseUrl')}/${project.mainImage}`;
+      project.images = project.images.map((image)=>{
+        console.log(image)
+        return `${this.envService.get('app.baseUrl')}/${image}`
+      })
     });
     return projects;
   }

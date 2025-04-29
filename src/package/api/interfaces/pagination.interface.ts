@@ -6,8 +6,10 @@ export class Pagination {
   needPagination?: boolean;
 }
 
-export class IPaginationRequest {
+export class PaginationRequest {
   page: number;
   limit: number;
-  needPagination?: boolean;
+  needPagination: boolean = false;
 }
+
+export const paginationKeys: string[] = Object.keys(new PaginationRequest());
