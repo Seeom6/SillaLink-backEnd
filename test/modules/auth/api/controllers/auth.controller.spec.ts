@@ -3,7 +3,7 @@ import { AuthController, AuthControllerWithToken } from '@Modules/auth/api/contr
 import { AuthService } from '@Modules/auth/services/auth.service';
 import { SingInDto } from '@Modules/auth/api/dto/request/singIn.dto';
 import { LogInDto } from '@Modules/auth/api/dto/request/logIn.dto';
-import { UserPayload } from '@Package/auth';
+import { UserPayload } from 'src/package/auth';
 
 describe('AuthController', () => {
     let controller: AuthController;

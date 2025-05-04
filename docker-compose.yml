@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
     app:
@@ -26,13 +26,17 @@ services:
       restart: always
       ports: 
         - "27027:27017"
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
       environment:
         # MONGO_INITDB_ROOT_USERNAME: silla_link
         # MONGO_INITDB_ROOT_PASSWORD: silla_link
         MONGO_INITDB_DATABASE: silla_link
-      command: mongod --replSet rs0 --bind_ip_all
+      command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
       volumes:
         - mongodata:/data/db
+        - mongo1_config:/data/configdb
+
       networks:
         - app-network
       healthcheck:
@@ -76,3 +80,4 @@ networks:
 volumes:
   mongodata:
   redisdata:
+  mongo1_config:

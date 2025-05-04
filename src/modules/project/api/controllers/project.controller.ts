@@ -1,6 +1,6 @@
 import { ProjectServiceWeb } from "@Modules/project/services/project.service";
 import { Get } from "@nestjs/common";
-import { ControllerWeb } from "@Package/api";
+import { ControllerWeb } from "src/package/api";
 import { GetAllProjects } from "../dto/response/get-all-porject.dto";
 
 @ControllerWeb({

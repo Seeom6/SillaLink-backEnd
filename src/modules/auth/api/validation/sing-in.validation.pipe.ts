@@ -1,4 +1,4 @@
-import { BaseValidationPipe } from '@Package/api';
+import { BaseValidationPipe } from 'src/package/api';
 import { z } from 'zod';
 import { SingInDto } from '../dto/request/singIn.dto';
 

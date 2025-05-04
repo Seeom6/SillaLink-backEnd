@@ -1,6 +1,6 @@
 import { AuthAdminService } from "@Modules/auth/services/auth.admin.service";
 import { Body, Post } from "@nestjs/common";
-import { AuthControllerAdmin, ControllerAdmin } from "@Package/api";
+import { AuthControllerAdmin, ControllerAdmin } from "src/package/api";
 import { LogInDto } from "../dto/request/logIn.dto";
 
 @ControllerAdmin({

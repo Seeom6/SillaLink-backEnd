@@ -3,7 +3,7 @@ import { UserRepository } from '../entity/user.repository';
 import { User } from '@Modules/user';
 import { CreateUserDto } from '../api/dto/request/create-user.dto';
 import {ClientSession} from "mongoose";
-import {Pagination} from "@Package/api";
+import {Pagination} from "src/package/api";
 
 @Injectable()
 export class UserService {

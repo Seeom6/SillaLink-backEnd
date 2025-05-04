@@ -3,7 +3,7 @@ import { BaseMongoRepository } from '@Package/database/mongodb';
 import {User, UserDocument} from './user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Pagination} from '@Package/api';
+import { Pagination} from 'src/package/api';
 
 @Injectable()
 export class UserRepository extends BaseMongoRepository<User> {

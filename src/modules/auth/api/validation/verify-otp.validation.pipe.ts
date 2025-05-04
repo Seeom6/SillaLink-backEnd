@@ -1,4 +1,4 @@
-import { BaseValidationPipe } from '@Package/api';
+import { BaseValidationPipe } from 'src/package/api';
 import { z } from 'zod';
 import { VerifyOtpDto } from '../dto/request/verify-otp.dto';
 

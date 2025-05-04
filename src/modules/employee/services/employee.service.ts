@@ -2,10 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { UserRepository } from "../../user/entity/user.repository";
 import { EmployeeError, EmployeeErrorCode } from "./employee.error";
 import { CreateEmployee } from "../api/dto/requests/create-employee.dto";
-import { HashService } from "@Package/auth";
+import { HashService } from "src/package/auth";
 import { UserRole } from "@Modules/user";
 import { GetAllEmployee } from "@Modules/employee/api/dto/requests/get-all-employee.dto";
-import { Pagination, QueryValue } from "@Package/api";
+import { Pagination, QueryValue } from "src/package/api";
 
 
 @Injectable()

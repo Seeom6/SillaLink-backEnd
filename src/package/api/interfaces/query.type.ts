@@ -1,4 +1,4 @@
-import {PaginationRequest} from "@Package/api";
+import {PaginationRequest} from "src/package/api";
 
 export type QueryValue<T> = Omit<T, keyof PaginationRequest>
 

@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Connection } from 'mongoose';
 
 import { EnvironmentService } from '@Package/config';
-import { HashService, UserPayload } from '@Package/auth';
+import { HashService, UserPayload } from 'src/package/auth';
 import { RedisService } from '@Package/cache/redis/redis.service';
 import { generateOTP, MailService } from '@Package/services';
 import { AppError } from '@Package/error/app.error';

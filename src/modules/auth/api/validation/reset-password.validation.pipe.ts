@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BaseValidationPipe } from '@Package/api';
+import { BaseValidationPipe } from 'src/package/api';
 import { z } from 'zod';
 
 const ResetPasswordDto = z.object({

@@ -3,7 +3,7 @@ import {
   Pagination,
   paginationKeys,
   PaginationRequest
-} from "@Package/api";
+} from "src/package/api";
 
 
 export function parseQuery<T extends PaginationRequest>(query: T ): { pagination:Pagination, myQuery:ExcludeQuery<T> } {

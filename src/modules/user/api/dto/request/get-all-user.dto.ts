@@ -1,4 +1,4 @@
-import {PaginationRequest} from "@Package/api";
+import {PaginationRequest} from "src/package/api";
 
 export class GetAllUserDto extends PaginationRequest {
 

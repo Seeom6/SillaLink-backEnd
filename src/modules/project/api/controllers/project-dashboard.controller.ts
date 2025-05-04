@@ -1,6 +1,6 @@
 import { ProjectService } from "@Modules/project/services/project.dashboard.service";
 import { Body, Delete, Get, Param, Post, Put } from "@nestjs/common";
-import { AuthControllerAdmin } from "@Package/api";
+import { AuthControllerAdmin } from "src/package/api";
 import { CreateProjectDto } from "../dto/request/create-project.dto";
 import { CreateProjectValidation } from "../validation/create-project.validation.pipe";
 import { GetAllProjects } from "../dto/response/get-all-porject.dto";

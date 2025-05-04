@@ -7,7 +7,7 @@ import {
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
-import {CHECK_TYPES_KEY} from "@Package/api";
+import {CHECK_TYPES_KEY} from "src/package/api";
 import {CodeErrors} from "@Modules/shared";
 
 @Injectable()

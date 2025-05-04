@@ -7,7 +7,7 @@ export enum EmployeeErrorCode {
     EMPLOYEE_ALREADY_EXISTS = 2002,
 }
 
-export const EmployeeErrorMessages = {
+const EmployeeErrorMessages = {
     [EmployeeErrorCode.EMPLOYEE_NOT_FOUND]: 'Employee not found',
     [EmployeeErrorCode.EMPLOYEE_ALREADY_EXISTS]: 'Employee already exists',
 };

@@ -1,5 +1,5 @@
 import {Body, Get, Post, Query} from '@nestjs/common';
-import {AuthControllerAdmin, parseQuery, Pagination} from '@Package/api';
+import {AuthControllerAdmin, parseQuery, Pagination} from 'src/package/api';
 import { EmployeeService } from '@Modules/employee/services/employee.service';
 import { CreateEmployeeValidation } from '../validation/create-employee.validation';
 import { CreateEmployee } from '../dto/requests/create-employee.dto';

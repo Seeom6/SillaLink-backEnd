@@ -8,7 +8,7 @@ import { RedisService } from "@Package/cache";
 import { AuthError, AuthErrorCode } from "./auth.error";
 import { UserService } from "@Modules/user";
 import { JwtService } from "@nestjs/jwt";
-import { HashService, UserPayload } from "@Package/auth";
+import { HashService, UserPayload } from "src/package/auth";
 @Injectable()
 export class AuthAdminService {
     constructor(
