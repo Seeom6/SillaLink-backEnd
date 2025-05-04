@@ -5,7 +5,7 @@ import {CreateServiceValidation} from "@Modules/our-service/api/validation/creat
 import {CreateServiceDto} from "@Modules/our-service/api/dto/requests";
 import {OurServiceDocument} from "@Modules/our-service/entity/our-service.schema";
 import {GetAllServiceDto} from "@Modules/our-service/api/dto/responses/get-all-service.dto";
-import {GetPolicy, PostPolicy, PutPolicy} from "@Package/api/decorators/auth-method.decorator";
+import {DeletePolicy, GetPolicy, PostPolicy, PutPolicy} from "@Package/api/decorators/auth-method.decorator";
 import {UserRole} from "@Modules/user";
 import {GetServiceDashboardDto} from "@Modules/our-service/api/dto/responses/get-service-dashboard.dto";
 import {UpdateServiceValidation} from "@Modules/our-service/api/validation/update-service.dto";
@@ -58,5 +58,13 @@ export class OurServiceController {
         @Param("id") id: string,
         @Body(UpdateServiceValidation) data: UpdateServiceDashboardDto) {
         return this.ourServiceService.updateService(id, data)
+    }
+
+    @DeletePolicy({
+        path: ":id",
+        role: [UserRole.ADMIN]
+    })
+    async delete(@Param('id') id: string) {
+        return this.ourServiceService.delete(id)
     }
 }

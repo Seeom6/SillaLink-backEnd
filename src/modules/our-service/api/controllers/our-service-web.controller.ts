@@ -5,14 +5,14 @@ import {GetAllServiceDto} from "@Modules/our-service/api/dto/responses/get-all-s
 
 
 @ControllerWeb({
-  prefix: '/our-service',
+  prefix: 'our-service',
 })
 export class OurServiceWebController {
   constructor(
     private readonly ourServiceService: OurServiceWebService
   ) {}
 
-  @Get("")
+  @Get()
   async getAll() {
     const data = await this.ourServiceService.getOurService()
     return data.map((s) => new GetAllServiceDto(s));

@@ -9,6 +9,7 @@ import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
 import {CHECK_TYPES_KEY} from "src/package/api";
 import {CodeErrors} from "@Modules/shared";
+import {AppError, ErrorFactory} from "@Package/error";
 
 @Injectable()
 export class UserTypesGuard implements CanActivate {
@@ -21,12 +22,15 @@ export class UserTypesGuard implements CanActivate {
     }>(CHECK_TYPES_KEY, context.getHandler());
 
     const { user } = context.switchToHttp().getRequest();
-
-    if (!typeHandlers.values.includes(user.type))
-      throw new HttpException(
-        { error: CodeErrors.VALIDATION_ERROR },
-        HttpStatus.UNAUTHORIZED,
+    if (!typeHandlers.values.includes(user.role)){
+      throw new AppError(
+        {
+          code: CodeErrors.USER_NOT_ALLOW,
+          message: "you not allow to this action"
+        },
       );
+    }
+
 
     return true;
   }

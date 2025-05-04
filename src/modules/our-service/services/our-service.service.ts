@@ -73,4 +73,24 @@ export class OurServiceService {
         })
         return;
     }
+
+    async delete(id: string): Promise<void> {
+        const service = await this.ourServiceRepository.findOne({
+            filter: { _id: id }
+        });
+
+        if (!service) {
+            this.ourServiceError.throw(OurServiceErrorCode.SERVICE_NOT_FOUND);
+        }
+
+        await this.ourServiceRepository.findOneAndUpdate({
+            filter: {
+                _id: toMongoId(id)
+            },
+            update: {
+                deletedAt: new Date()
+            }
+        })
+        return;
+    }
 }

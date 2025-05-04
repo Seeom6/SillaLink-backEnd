@@ -11,6 +11,7 @@ export class MongoExceptionFilter implements ExceptionFilter {
   catch(exception: MongoServerError, host: ArgumentsHost): void {
     const response = host.switchToHttp().getResponse<Response>();
     const request = host.switchToHttp().getRequest<Request>();
+    console.log("MongoServerError :", exception);
 
     const statusCode = 400;
     const timestamp = new Date();

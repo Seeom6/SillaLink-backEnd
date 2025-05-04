@@ -11,6 +11,7 @@ export class ZodExceptionFilter implements ExceptionFilter {
   catch(exception: ZodError, host: ArgumentsHost): void {
     const response: Response = host.switchToHttp().getResponse();
     const request: Request = host.switchToHttp().getRequest();
+    console.log("ZodExceptionFilter :", exception);
 
     const firstIssue = exception.issues[0];
     const errorMessage = firstIssue.path[0] + " " + firstIssue?.message || 'Validation error';

@@ -14,7 +14,7 @@ import { OurServiceWebService } from "@Modules/our-service/services/our-service-
             { name: OurService.name, schema: OurServiceSchema }
         ])
     ],
-    controllers: [OurServiceController, OurServiceWebController],
+    controllers: [OurServiceWebController, OurServiceController],
     providers: [OurServiceService, OurServiceWebService, OurServiceError, OurServiceRepository],
     exports: [OurServiceService]
 })
