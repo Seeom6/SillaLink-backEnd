@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { OurServiceError, OurServiceErrorCode } from './our-service.error';
-import { OurServiceRepository } from '../entity/our-service.repository';
-import { Pagination } from 'src/package/api';
+import {Injectable} from '@nestjs/common';
+import {OurServiceError, OurServiceErrorCode} from './our-service.error';
+import {OurServiceRepository} from '../entity/our-service.repository';
+import {Pagination} from 'src/package/api';
 import {CreateServiceDto} from "@Modules/our-service/api/dto/requests";
-import {OurServiceDocument} from "@Modules/our-service/entity/our-service.schema";
 import {UpdateServiceDashboardDto} from "@Modules/our-service/api/dto/requests/update-service-dashboard.dto";
 import {toMongoId} from "@Package/services";
+import {parsImageUrl} from "@Package/file";
 
 @Injectable()
 export class OurServiceService {
@@ -23,6 +23,8 @@ export class OurServiceService {
         if (!service) {
             this.ourServiceError.throw(OurServiceErrorCode.SERVICE_NOT_FOUND);
         }
+
+        service.image = parsImageUrl(service.image)
 
         return service;
     }
@@ -47,8 +49,12 @@ export class OurServiceService {
         return;
     }
 
-    async getAllServices(pagination?: Pagination): Promise<OurServiceDocument[]> {
-        return this.ourServiceRepository.findAllServices(pagination);
+    async getAllServices(pagination?: Pagination) {
+        const services = await this.ourServiceRepository.findAllServices(pagination);
+        services.map((service)=>{
+            service.image = parsImageUrl(service.image)
+        })
+        return services
     }
 
     async updateService(id: string, data: UpdateServiceDashboardDto):Promise<void> {
@@ -57,6 +63,10 @@ export class OurServiceService {
                 id: id,
             }
         })
+
+        if(existingService){
+            this.ourServiceError.throw(OurServiceErrorCode.SERVICE_NOT_FOUND)
+        }
         const isTheSameName = await this.ourServiceRepository.findOne({
             filter: {
                 name: data.name

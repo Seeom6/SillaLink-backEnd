@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ProjectRepository } from "../database/project.repository";
 import { ProjectDocument } from "../database/project.schema";
 import { EnvironmentService } from "@Package/config";
+import {parsImageUrl} from "@Package/file";
 
 @Injectable()
 export class ProjectServiceWeb {
@@ -29,11 +30,8 @@ export class ProjectServiceWeb {
       ]
     })
     projects.forEach((project) => {
-      project.mainImage = `${this.envService.get('app.baseUrl')}/${project.mainImage}`;
-      project.images = project.images.map((image)=>{
-        console.log(image)
-        return `${this.envService.get('app.baseUrl')}/${image}`
-      })
+      project.mainImage = parsImageUrl(project.mainImage);
+      project.images = project.images.map((image)=>parsImageUrl(image))
     });
     return projects;
   }
