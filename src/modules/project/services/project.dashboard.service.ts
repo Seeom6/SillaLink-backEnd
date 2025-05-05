@@ -3,8 +3,9 @@ import { ProjectRepository } from '../database/project.repository';
 import { CreateProjectDto } from '../api/dto/request/create-project.dto';
 import { UpdateProjectDto } from '../api/dto/request/update-project.dto';
 import { ProjectDocument } from '../database/project.schema';
-import { ProjectError, ProjectErrorCode } from './project.error';
+import { ProjectError } from './project.error';
 import { EnvironmentService } from '@Package/config';
+import {ErrorCode} from "../../../common/error/error-code";
 
 @Injectable()
 export class ProjectService {
@@ -17,7 +18,7 @@ export class ProjectService {
   async create(createProjectDto: CreateProjectDto): Promise<void> {
     const existingProject = await this.projectRepository.findByName(createProjectDto.name);
     if (existingProject) {
-      this.projectError.throw(ProjectErrorCode.PROJECT_ALREADY_EXISTS);
+      this.projectError.throw(ErrorCode.PROJECT_ALREADY_EXISTS);
     }
     await this.projectRepository.create({
       ...createProjectDto,
@@ -32,7 +33,7 @@ export class ProjectService {
       },
     });
     if (!project) {
-      this.projectError.throw(ProjectErrorCode.PROJECT_NOT_FOUND);
+      this.projectError.throw(ErrorCode.PROJECT_NOT_FOUND);
     }
     return project;
   }
@@ -43,13 +44,13 @@ export class ProjectService {
     if (updateProjectDto.name) {
       const existingProject = await this.projectRepository.findByName(updateProjectDto.name);
       if (existingProject && existingProject._id.toString() !== id) {
-        this.projectError.throw(ProjectErrorCode.PROJECT_ALREADY_EXISTS);
+        this.projectError.throw(ErrorCode.PROJECT_ALREADY_EXISTS);
       }
     }
 
     const project = await this.projectRepository.update(id, updateProjectDto);
     if (!project) {
-      this.projectError.throw(ProjectErrorCode.PROJECT_NOT_FOUND);
+      this.projectError.throw(ErrorCode.PROJECT_NOT_FOUND);
     }
     return ;
   }
@@ -78,7 +79,7 @@ export class ProjectService {
       }
     })
     if(!project){
-      this.projectError.throw(ProjectErrorCode.PROJECT_NOT_FOUND)
+      this.projectError.throw(ErrorCode.PROJECT_NOT_FOUND)
     }
     project.mainImage = `${this.envService.get('app.baseUrl')}/${project.mainImage}`;
     return project

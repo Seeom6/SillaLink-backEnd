@@ -3,7 +3,6 @@ import { InjectConnection } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { Connection } from 'mongoose';
 
-import { EnvironmentService } from '@Package/config';
 import { HashService, UserPayload } from 'src/package/auth';
 import { RedisService } from '@Package/cache/redis/redis.service';
 import { generateOTP, MailService } from '@Package/services';
@@ -11,7 +10,8 @@ import { AppError } from '@Package/error/app.error';
 import { SingInDto } from '../api/dto/request/singIn.dto';
 import { LogInDto } from '../api/dto/request/logIn.dto';
 import { UserService} from '@Modules/user';
-import { AuthError, AuthErrorCode } from './auth.error';
+import { AuthError } from './auth.error';
+import {ErrorCode} from "../../../common/error/error-code";
 
 @Injectable()
 export class AuthService {
@@ -28,7 +28,7 @@ export class AuthService {
    public async signIn(userSignInInfo: SingInDto) {
       const isExist = await this.userService.findUserByEmail(userSignInInfo.email, false);
       if(isExist) {
-         this.authError.throw(AuthErrorCode.USER_ALREADY_EXISTS);
+         this.authError.throw(ErrorCode.USER_ALREADY_EXISTS);
       }
       let token: string;
       const session = await this.connection.startSession()
@@ -67,7 +67,7 @@ export class AuthService {
       const user = await this.userService.findUserByEmail(logInInfo.email, false);
       
       if(!user) {
-         this.authError.throw(AuthErrorCode.INVALID_CREDENTIALS);
+         this.authError.throw(ErrorCode.INVALID_CREDENTIALS);
       }
 
       const isPasswordValid = await HashService.comparePassword(
@@ -76,7 +76,7 @@ export class AuthService {
       );
 
       if(!isPasswordValid) {
-         this.authError.throw(AuthErrorCode.INVALID_CREDENTIALS);
+         this.authError.throw(ErrorCode.INVALID_CREDENTIALS);
       }
 
       const userPayload: UserPayload = {
@@ -102,11 +102,11 @@ export class AuthService {
       try {    
          const storedOtp = await this.redisService.get<string>(`otp:${email}`);
          if (!storedOtp) {
-            this.authError.throw(AuthErrorCode.OTP_EXPIRED);
+            this.authError.throw(ErrorCode.OTP_EXPIRED);
          }
 
          if (storedOtp !== otp) {
-            this.authError.throw(AuthErrorCode.INVALID_OTP);
+            this.authError.throw(ErrorCode.INVALID_OTP);
          }
 
          await this.redisService.delete(`otp:${email}`);
@@ -117,7 +117,7 @@ export class AuthService {
          if (error instanceof AppError) {
             throw error;
          }
-         this.authError.throw(AuthErrorCode.OTP_VERIFICATION_FAILED);
+         this.authError.throw(ErrorCode.OTP_VERIFICATION_FAILED);
       }
    }
 
@@ -149,11 +149,11 @@ export class AuthService {
       try {
          const storedOtp = await this.redisService.get<string>(`reset:${email}`);
          if (!storedOtp) {
-            this.authError.throw(AuthErrorCode.OTP_EXPIRED);
+            this.authError.throw(ErrorCode.OTP_EXPIRED);
          }
 
          if (storedOtp !== otp) {
-            this.authError.throw(AuthErrorCode.INVALID_OTP);
+            this.authError.throw(ErrorCode.INVALID_OTP);
          }
 
          // Generate a reset token that will be used to reset the password
@@ -173,7 +173,7 @@ export class AuthService {
          if (error instanceof AppError) {
             throw error;
          }
-         this.authError.throw(AuthErrorCode.OTP_VERIFICATION_FAILED);
+         this.authError.throw(ErrorCode.OTP_VERIFICATION_FAILED);
       }
    }
 
@@ -186,7 +186,7 @@ export class AuthService {
          if (error instanceof AppError) {
             throw error;
          }
-         this.authError.throw(AuthErrorCode.OTP_VERIFICATION_FAILED);
+         this.authError.throw(ErrorCode.OTP_VERIFICATION_FAILED);
       }
    }
 }

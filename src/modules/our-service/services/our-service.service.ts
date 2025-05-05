@@ -1,11 +1,12 @@
 import {Injectable} from '@nestjs/common';
-import {OurServiceError, OurServiceErrorCode} from './our-service.error';
+import {OurServiceError} from './our-service.error';
 import {OurServiceRepository} from '../entity/our-service.repository';
 import {Pagination} from 'src/package/api';
 import {CreateServiceDto} from "@Modules/our-service/api/dto/requests";
 import {UpdateServiceDashboardDto} from "@Modules/our-service/api/dto/requests/update-service-dashboard.dto";
 import {toMongoId} from "@Package/services";
 import {parsImageUrl} from "@Package/file";
+import {ErrorCode} from "../../../common/error/error-code";
 
 @Injectable()
 export class OurServiceService {
@@ -21,7 +22,7 @@ export class OurServiceService {
         });
 
         if (!service) {
-            this.ourServiceError.throw(OurServiceErrorCode.SERVICE_NOT_FOUND);
+            this.ourServiceError.throw(ErrorCode.SERVICE_NOT_FOUND);
         }
 
         return service;
@@ -34,7 +35,7 @@ export class OurServiceService {
         });
 
         if (existingService) {
-            this.ourServiceError.throw(OurServiceErrorCode.SERVICE_ALREADY_EXISTS);
+            this.ourServiceError.throw(ErrorCode.SERVICE_ALREADY_EXISTS);
         }
 
         await this.ourServiceRepository.create({
@@ -63,7 +64,7 @@ export class OurServiceService {
         })
 
         if(existingService){
-            this.ourServiceError.throw(OurServiceErrorCode.SERVICE_NOT_FOUND)
+            this.ourServiceError.throw(ErrorCode.SERVICE_NOT_FOUND)
         }
         const isTheSameName = await this.ourServiceRepository.findOne({
             filter: {
@@ -71,7 +72,7 @@ export class OurServiceService {
             }
         })
         if (isTheSameName) {
-            this.ourServiceError.throw(OurServiceErrorCode.SERVICE_ALREADY_EXISTS);
+            this.ourServiceError.throw(ErrorCode.SERVICE_ALREADY_EXISTS);
         }
         await this.ourServiceRepository.findOneAndUpdate({
             filter: {
@@ -88,7 +89,7 @@ export class OurServiceService {
         });
 
         if (!service) {
-            this.ourServiceError.throw(OurServiceErrorCode.SERVICE_NOT_FOUND);
+            this.ourServiceError.throw(ErrorCode.SERVICE_NOT_FOUND);
         }
 
         await this.ourServiceRepository.findOneAndUpdate({

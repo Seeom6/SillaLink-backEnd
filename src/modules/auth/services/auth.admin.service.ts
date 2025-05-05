@@ -1,14 +1,14 @@
 import { InjectConnection } from "@nestjs/mongoose";
 import { LogInDto } from "../api/dto/request/logIn.dto";
-import { AuthService } from "./auth.service";
 import { Injectable } from "@nestjs/common";
 import { Connection } from "mongoose";
 import { MailService } from "@Package/services/email/email.service";
 import { RedisService } from "@Package/cache";
-import { AuthError, AuthErrorCode } from "./auth.error";
+import { AuthError } from "./auth.error";
 import { UserService } from "@Modules/user";
 import { JwtService } from "@nestjs/jwt";
 import { HashService, UserPayload } from "src/package/auth";
+import {ErrorCode} from "../../../common/error/error-code";
 @Injectable()
 export class AuthAdminService {
     constructor(
@@ -23,11 +23,11 @@ export class AuthAdminService {
     async login(body: LogInDto) {
         const user = await this.userService.findUserByEmail(body.email, false);
         if (!user) {
-            this.authError.throw(AuthErrorCode.INVALID_CREDENTIALS);
+            this.authError.throw(ErrorCode.INVALID_CREDENTIALS);
         }
 
         if (user.role !== "admin") {
-            this.authError.throw(AuthErrorCode.INVALID_CREDENTIALS);
+            this.authError.throw(ErrorCode.INVALID_CREDENTIALS);
         }
 
         const isPasswordValid = await HashService.comparePassword(
@@ -35,7 +35,7 @@ export class AuthAdminService {
             user.password
         );
         if (!isPasswordValid) {
-            this.authError.throw(AuthErrorCode.INVALID_CREDENTIALS);
+            this.authError.throw(ErrorCode.INVALID_CREDENTIALS);
         }
 
         const userPayload: UserPayload = {

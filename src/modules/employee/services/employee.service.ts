@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { UserRepository } from "../../user/entity/user.repository";
-import { EmployeeError, EmployeeErrorCode } from "./employee.error";
+import { EmployeeError } from "./employee.error";
 import { CreateEmployee } from "../api/dto/requests/create-employee.dto";
 import { HashService } from "src/package/auth";
 import { UserRole } from "@Modules/user";
 import { GetAllEmployee } from "@Modules/employee/api/dto/requests/get-all-employee.dto";
 import { Pagination, QueryValue } from "src/package/api";
+import {ErrorCode} from "../../../common/error/error-code";
 
 
 @Injectable()
@@ -22,7 +23,7 @@ export class EmployeeService {
             }
         })
         if(employee){
-            this.employeeError.throw(EmployeeErrorCode.EMPLOYEE_ALREADY_EXISTS)
+            this.employeeError.throw(ErrorCode.EMPLOYEE_ALREADY_EXISTS)
         }
         const hashedPassword = await HashService.hashPassword(body.password);
         await this.userRepository.create({

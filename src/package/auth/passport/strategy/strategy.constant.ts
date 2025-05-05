@@ -1,3 +1,4 @@
 export const StrategyConstant = {
-  jwt: "jwt"
+  jwt: "jwt",
+  refresh_Token: "refresh-token"
 }

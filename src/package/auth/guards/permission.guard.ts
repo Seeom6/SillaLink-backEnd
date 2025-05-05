@@ -8,8 +8,8 @@ import {
 import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
 import {CHECK_TYPES_KEY} from "src/package/api";
-import {CodeErrors} from "@Modules/shared";
 import {AppError, ErrorFactory} from "@Package/error";
+import {ErrorCode} from "../../../common/error/error-code";
 
 @Injectable()
 export class UserTypesGuard implements CanActivate {
@@ -25,7 +25,7 @@ export class UserTypesGuard implements CanActivate {
     if (!typeHandlers.values.includes(user.role)){
       throw new AppError(
         {
-          code: CodeErrors.USER_NOT_ALLOW,
+          code: ErrorCode.USER_NOT_ALLOW,
           message: "you not allow to this action"
         },
       );

@@ -3,4 +3,5 @@ export interface IAppEnv {
   host: string;
   name: string;
   baseUrl: string;
+  version: string;
 }

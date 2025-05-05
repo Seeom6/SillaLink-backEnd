@@ -9,6 +9,7 @@ async function bootstrap() {
   nestjsFilter(app)
   const configService =  app.get(EnvironmentService);
   app.use(morgan("dev"))
+  app.setGlobalPrefix(`api/${configService.get("app.version")}`)
   const port = configService.get("app.port");
   await app.listen(port).then(() => {
     console.log(`Server running on port: ${port}`);

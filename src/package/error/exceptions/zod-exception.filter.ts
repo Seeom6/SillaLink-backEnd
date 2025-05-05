@@ -1,8 +1,8 @@
 import { ExceptionFilter, Catch, ArgumentsHost, Logger } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { ZodError } from 'zod';
-import { IResponseError } from '@Package/error/error.interface'; 
-import { CodeErrors } from '@Modules/shared';
+import { IResponseError } from '@Package/error/error.interface';
+import {ErrorCode} from "../../../common/error/error-code";
 
 @Catch(ZodError)
 export class ZodExceptionFilter implements ExceptionFilter {
@@ -20,7 +20,7 @@ export class ZodExceptionFilter implements ExceptionFilter {
       path: request.path,
       time: new Date(),
       message: errorMessage,
-      code: CodeErrors.VALIDATION_ERROR,
+      code: ErrorCode.VALIDATION_ERROR,
       errorType: 'VALIDATION_ERROR',
     };
 

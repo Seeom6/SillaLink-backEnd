@@ -2,10 +2,9 @@
 import { Injectable } from '@nestjs/common';
 import  * as nodemailer from 'nodemailer';
 import {EnvironmentService} from "@Package/config";
-import {ConfigService} from "@nestjs/config";
 import {AppError} from "@Package/error";
-import {CodeErrors} from "@Modules/shared";
 import { EmailTemplateService } from './template.service';
+import {ErrorCode} from "../../../common/error/error-code";
 
 @Injectable()
 export class MailService {
@@ -36,7 +35,7 @@ export class MailService {
         } catch (e) {
             console.log(e)
             throw new AppError({
-                code: CodeErrors.MAIL_ERROR,
+                code: ErrorCode.MAIL_ERROR,
                 message: `error in send email : ${e.message}`
             })
         }
