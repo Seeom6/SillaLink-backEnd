@@ -24,8 +24,6 @@ export class OurServiceService {
             this.ourServiceError.throw(OurServiceErrorCode.SERVICE_NOT_FOUND);
         }
 
-        service.image = parsImageUrl(service.image)
-
         return service;
     }
 

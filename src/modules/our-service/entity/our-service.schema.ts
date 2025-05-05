@@ -1,5 +1,6 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from 'mongoose';
+import {parsImageUrl} from "@Package/file";
 
 export type OurServiceDocument = OurService & Document;
 
@@ -22,3 +23,6 @@ export class OurService {
 }
 
 export const OurServiceSchema = SchemaFactory.createForClass(OurService);
+OurServiceSchema.post("findOne",(doc)=>{
+    doc.image = parsImageUrl(doc.image)
+})
