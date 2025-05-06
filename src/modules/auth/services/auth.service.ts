@@ -12,6 +12,11 @@ import { LogInDto } from '../api/dto/request/logIn.dto';
 import { UserService} from '@Modules/user';
 import { AuthError } from './auth.error';
 import {ErrorCode} from "../../../common/error/error-code";
+import {EnvironmentService} from "@Package/config";
+import { v4 as uuidv4 } from "uuid"
+import {IRefreshToken} from "@Package/auth/types/refresh-token.type";
+import {RedisKeys} from "../../../common/redis.constant";
+import {Response} from "express";
 
 @Injectable()
 export class AuthService {
@@ -21,6 +26,7 @@ export class AuthService {
       private readonly authError: AuthError,
       private readonly redisService: RedisService,
       private readonly mailService: MailService,
+      private readonly environmentService: EnvironmentService,
       @InjectConnection() private readonly connection: Connection
    ){}
 
@@ -85,16 +91,20 @@ export class AuthService {
          role: user.role
       };
 
+      const jwtId = uuidv4()
+
+      const refresh: IRefreshToken = {
+         userId: user._id.toString(),
+      }
+
       const accessToken = this.jwtService.sign(userPayload);
+      const refreshToken = this.jwtService.sign(refresh, {jwtid: jwtId, secret: this.environmentService.get("jwt.jwtRefreshToken"),expiresIn: this.environmentService.get("jwt.jwtExpiredRefresh")});
+      await this.redisService.del(`${RedisKeys.REDIS_TOKEN}:${user._id.toString()}`)
+      await this.redisService.set(`${RedisKeys.REDIS_TOKEN}:${user._id.toString()}`, refreshToken);
 
       return {
-         access_token: accessToken,
-         user: {
-            id: user.id,
-            email: user.email,
-            role: user.role
-         },
-         message: 'OTP has been sent to your email'
+         accessToken: accessToken,
+         refreshToken: refreshToken,
       };
    }
 
@@ -109,7 +119,7 @@ export class AuthService {
             this.authError.throw(ErrorCode.INVALID_OTP);
          }
 
-         await this.redisService.delete(`otp:${email}`);
+         await this.redisService.del(`otp:${email}`);
          await this.userService.updateUserByEmail(email, { isActive: true });
 
          return { message: 'OTP verified successfully' };
@@ -162,7 +172,7 @@ export class AuthService {
             { expiresIn: '15m' }
          );
 
-         await this.redisService.delete(`reset:${email}`);
+         await this.redisService.del(`reset:${email}`);
          await this.redisService.set(`reset_token:${email}`, resetToken, 90000000); // 15 minutes
 
          return { 
@@ -188,5 +198,39 @@ export class AuthService {
          }
          this.authError.throw(ErrorCode.OTP_VERIFICATION_FAILED);
       }
+   }
+
+   async refreshToken(payload: IRefreshToken, res: Response){
+      const refreshRedisToken = await this.redisService.get<string>(`${RedisKeys.REDIS_TOKEN}:${payload.userId}`)
+      if(!refreshRedisToken){
+         this.authError.throw(ErrorCode.REFRESH_TOKEN_NOT_IN_REDIS);
+      }
+
+      const decodeToken: IRefreshToken = await this.jwtService.decode(refreshRedisToken);
+      if(decodeToken.jti !== payload.jti){
+         await this.redisService.del(`${RedisKeys.REDIS_TOKEN}:${payload.userId}`)
+         res.cookie(`${RedisKeys.REDIS_TOKEN}`, null)
+         this.authError.throw(ErrorCode.INVALID_TOKEN);
+      }
+
+      const user = await this.userService.findById(payload.userId);
+
+      const userPayload: UserPayload = {
+         email: user.email,
+         id: user.id,
+         role: user.role
+      };
+
+      const jwtId = uuidv4()
+
+      const refresh: IRefreshToken = {
+         userId: user._id.toString(),
+      }
+
+      const accessToken = this.jwtService.sign(userPayload);
+      const refreshToken = this.jwtService.sign(refresh, {jwtid: jwtId, secret: this.environmentService.get("jwt.jwtRefreshToken"),expiresIn: this.environmentService.get("jwt.jwtExpiredRefresh")});
+      await this.redisService.del(`${RedisKeys.REDIS_TOKEN}:${user._id.toString()}`)
+      await this.redisService.set(`${RedisKeys.REDIS_TOKEN}:${user._id.toString()}`, refreshToken);
+      return { accessToken, refreshToken: refreshToken };
    }
 }

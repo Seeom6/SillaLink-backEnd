@@ -2,7 +2,6 @@ import * as mongoose from "mongoose";
 
 import {
   MongooseBaseQueryOptions,
-  MongooseUpdateQueryOptions,
   RootFilterQuery,
   Document
 } from "mongoose";

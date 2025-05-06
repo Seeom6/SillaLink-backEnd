@@ -1,14 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import {forwardRef, Inject, Injectable, Logger} from '@nestjs/common';
 import { join } from 'path';
 import { MediaPath } from '../types/media-path.enum';
 import { existsSync, unlink } from 'fs';
+import {EnvironmentService} from "@Package/config";
 
 @Injectable()
 export class FileUploadService {
   private readonly logger = new Logger(FileUploadService.name);
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: EnvironmentService) {}
 
   getFileUrl(filename: string, folder: string, mediaPath: MediaPath): string {
     return `media/${mediaPath}/${folder}/${filename}`;

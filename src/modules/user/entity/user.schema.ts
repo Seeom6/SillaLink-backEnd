@@ -2,6 +2,7 @@ import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from 'mongoose';
 import { UserRole } from "../types/role.enum";
 import { Employee, EmployeeSchema } from "./employee.schema";
+import {RefreshToken, RefreshTokenSchema} from "@Modules/user/entity/refresh-token.schema";
 
 
 export type UserDocument = User & Document;
@@ -40,6 +41,9 @@ export class User {
         type: String,
     })
     phone?: string;
+
+    @Prop({type: [RefreshTokenSchema], default: []})
+    refreshToken?: RefreshToken[]
 
     @Prop({ default: false })
     isActive?: boolean;

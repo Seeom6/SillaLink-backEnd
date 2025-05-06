@@ -3,12 +3,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Connection} from "mongoose";
 import * as console from "node:console";
 import { EnvironmentService } from '@Package/config';
-import { EnvConfigModule } from '@Package/config';
 
 @Module({
     imports: [
         MongooseModule.forRootAsync({
-            imports: [EnvConfigModule],
             inject: [EnvironmentService],
             useFactory: async (env: EnvironmentService)=> {
                 const host: string = env.get('mongodb.host');

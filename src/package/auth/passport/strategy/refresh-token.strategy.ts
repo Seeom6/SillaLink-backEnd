@@ -1,8 +1,9 @@
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
-import { StrategyConstant } from "@Package/auth";
+import {IRefreshToken, StrategyConstant} from "@Package/auth";
 import { EnvironmentService } from "@Package/config";
 import { Injectable } from "@nestjs/common";
+import { Request } from "express";
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(Strategy, StrategyConstant.refresh_Token) {
@@ -10,16 +11,21 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, StrategyCon
   constructor(
     private readonly environmentService: EnvironmentService,
   ) {
-    const secretKey = environmentService.get('jwt.jwtAccessToken');
+    const secretKey = environmentService.get('jwt.jwtRefreshToken');
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken() ,
+      jwtFromRequest: ExtractJwt.fromExtractors<Request>([
+        (req: Request) => {
+          return req?.cookies['refresh_token']
+        },
+      ]) ,
       ignoreExpiration: false,
       secretOrKey: secretKey,
       passReqToCallback: true,
     });
   }
 
-  validate(...args: any[]): unknown {
-    throw new Error("Method not implemented.");
+  validate(req: Request, payload: IRefreshToken) {
+    req["refresh"] = payload;
+    return payload;
   }
 }

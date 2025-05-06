@@ -1,19 +1,16 @@
-import {
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { StrategyConstant } from '@Package/auth/passport/strategy/strategy.constant';
-import { TokenExpiredError} from "@nestjs/jwt";
-import { ErrorFactory} from "@Package/error";
+import {AuthGuard} from "@nestjs/passport";
+import {StrategyConstant} from "@Package/auth";
+import {ExecutionContext, Injectable, UnauthorizedException} from "@nestjs/common";
+import {RedisService} from "@Package/cache";
+import {Observable} from "rxjs";
+import {TokenExpiredError} from "@nestjs/jwt";
+import {ErrorFactory} from "@Package/error";
 import {ErrorCode} from "../../../common/error/error-code";
 import {AuthErrorMessage} from "@Package/auth/error/message.error";
-import {Observable} from "rxjs";
-import {RedisService} from "@Package/cache";
+
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard(StrategyConstant.jwt) {
+export class RefreshTokenGuard extends AuthGuard(StrategyConstant.refresh_Token) {
   constructor(
     private readonly redisService: RedisService
   ) {
@@ -32,7 +29,11 @@ export class JwtAuthGuard extends AuthGuard(StrategyConstant.jwt) {
       })
     }
     if (err || !user) {
-      throw err || new UnauthorizedException();
+      throw ErrorFactory.createError({
+        code: ErrorCode.INVALID_RESET_TOKEN,
+        message: AuthErrorMessage[ErrorCode.INVALID_TOKEN],
+        errorType: "Auth Error",
+      })
     }
     return user;
   }

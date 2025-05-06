@@ -1,76 +1,80 @@
-import { Injectable, Inject, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
-import Keyv from 'keyv';
+import { Injectable, OnModuleDestroy, Logger } from '@nestjs/common';
+import { Redis } from 'ioredis';
+import { EnvironmentService } from "@Package/config";
 
 @Injectable()
-export class RedisService implements OnModuleInit, OnModuleDestroy {
+export class RedisService implements OnModuleDestroy {
+    private readonly redis: Redis;
     private readonly logger = new Logger(RedisService.name);
 
     constructor(
-        @Inject('REDIS_CLIENT') private readonly keyv: Keyv,
-    ) { }
+        private readonly envService: EnvironmentService
+    ) {
+        this.redis = new Redis({
+            host: envService.get("redis.host"),
+            port: envService.get("redis.port"),
+            db: envService.get("redis.databaseIndex"),
+        });
 
-    async onModuleInit() {
-        try {
-            await this.keyv.set('connection-test', 'ok');
-            const test = await this.keyv.get('connection-test');
-            if (test === 'ok') {
-                this.logger.log('Successfully connected to Redis');
-                await this.keyv.delete('connection-test');
-            }
-        } catch (error) {
-            this.logger.error('Failed to connect to Redis', error);
-            throw error;
-        }
-    }
+        this.redis.on('connect', () => {
+            this.logger.log('✅ Connected to Redis');
+        });
 
-    async onModuleDestroy() {
-        await this.keyv.disconnect();
-        this.logger.log('Redis connection closed');
+        this.redis.on('error', (err) => {
+            this.logger.error(`❌ Redis connection error: ${err.message}`);
+        });
     }
 
     async set(key: string, value: any, ttl?: number): Promise<void> {
-        try {
-            await this.keyv.set(key, value, ttl);
-        } catch (error) {
-            this.logger.error(`Error setting key ${key}`, error);
-            throw error;
+        const val = typeof value === 'object' ? JSON.stringify(value) : value;
+        await this.redis.set(key, val);
+        if (ttl) {
+            await this.redis.expire(key, ttl);
         }
     }
 
-    async get<T>(key: string): Promise<T | null> {
+    async get<T = any>(key: string): Promise<T | null> {
+        const val = await this.redis.get(key);
         try {
-            return await this.keyv.get(key);
-        } catch (error) {
-            this.logger.error(`Error getting key ${key}`, error);
-            throw error;
+            return val ? JSON.parse(val) : null;
+        } catch {
+            return val as any;
         }
     }
 
-    async delete(key: string): Promise<void> {
+    async del(key: string): Promise<number> {
+        return this.redis.del(key);
+    }
+
+    async lpush(key: string, ...values: string[]): Promise<number> {
+        return this.redis.lpush(key, ...values);
+    }
+
+    async lrange(key: string, start: number, end: number): Promise<string[]> {
+        return this.redis.lrange(key, start, end);
+    }
+
+    async hset(key: string, field: string, value: any): Promise<number> {
+        const val = typeof value === 'object' ? JSON.stringify(value) : value;
+        return this.redis.hset(key, field, val);
+    }
+
+    async hget(key: string, field: string): Promise<any> {
+        const val = await this.redis.hget(key, field);
         try {
-            await this.keyv.delete(key);
-        } catch (error) {
-            this.logger.error(`Error deleting key ${key}`, error);
-            throw error;
+            return JSON.parse(val);
+        } catch {
+            return val;
         }
     }
 
-    async clear(): Promise<void> {
-        try {
-            await this.keyv.clear();
-        } catch (error) {
-            this.logger.error('Error clearing Redis', error);
-            throw error;
-        }
+    async exists(key: string): Promise<boolean> {
+        return (await this.redis.exists(key)) === 1;
     }
 
-    async has(key: string): Promise<boolean> {
-        try {
-            const value = await this.keyv.get(key);
-            return value !== undefined;
-        } catch (error) {
-            this.logger.error(`Error checking existence of key ${key}`, error);
-            throw error;
-        }
+    onModuleDestroy() {
+        this.logger.log('👋 Disconnecting from Redis...');
+        this.redis.disconnect();
+        this.logger.log('🔌 Redis disconnected');
     }
 }
