@@ -66,6 +66,11 @@ export class AuthControllerWithToken {
    ) {
       return await this.authService.resetPassword(user.email, body.newPassword);
    }
+
+   @Post("logout")
+   async  logout(@Body() user: UserPayload, @Res() res: Response) {
+
+   }
 }
 
 @UseGuards(RefreshTokenGuard)
@@ -84,7 +89,13 @@ export class RefreshController {
       return {
          accessToken: tokens.accessToken
       }
+   }
 
+   @Post("log-out")
+   async logout(@RefreshPayload() payload: IRefreshToken, @Res({passthrough: true}) res: Response){
+      await this.authService.logOut(payload, res)
+      res.clearCookie(RedisKeys.REDIS_TOKEN);
+      return;
    }
 }
 

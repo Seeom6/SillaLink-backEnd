@@ -4,4 +4,5 @@ export interface IJWTEnv {
   jwtRefreshToken: string;
   jwtExpiredAccess: string;
   jwtExpiredRefresh: string;
+  refreshRedisExpired: number;
 }

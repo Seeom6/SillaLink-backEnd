@@ -1,6 +1,7 @@
 import { Injectable, OnModuleDestroy, Logger } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { EnvironmentService } from "@Package/config";
+import {TokenConstant} from "../../../common/auth/token.constant";
 
 @Injectable()
 export class RedisService implements OnModuleDestroy {
@@ -42,7 +43,7 @@ export class RedisService implements OnModuleDestroy {
         }
     }
 
-    async del(key: string): Promise<number> {
+    async del(key: string[]): Promise<number> {
         return this.redis.del(key);
     }
 
@@ -70,6 +71,18 @@ export class RedisService implements OnModuleDestroy {
 
     async exists(key: string): Promise<boolean> {
         return (await this.redis.exists(key)) === 1;
+    }
+
+    async ttl(key: string): Promise<number> {
+        return this.redis.ttl(key);
+    }
+
+    async getByPattern(pattern: string): Promise<{elements: string[]}> {
+        const cursor = 0
+        const result = await this.redis.scan(cursor, 'MATCH', `*${pattern}*`, 'COUNT', TokenConstant.MAX_USER_TOKEN_COUNT);
+        return {
+            elements: result[1]
+        }
     }
 
     onModuleDestroy() {

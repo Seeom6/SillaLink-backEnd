@@ -15,12 +15,12 @@ import { EnvironmentService } from '@Package/config';
                 const password: string = env.get('mongodb.password');
                 const database: string = env.get('mongodb.name');
 
-                // const uri = username && password
-                //     ? `mongodb://${username}:${password}@${host}:${port}/${database}?authSource=admin&replicaSet=rs0`
-                //     : `mongodb://${host}:${port}/${database}?authSource=admin&replicaSet=rs0`;
+                const uri = username && password
+                    ? `mongodb://${username}:${password}@${host}:${port}/${database}?authSource=admin&replicaSet=rs0`
+                    : `mongodb://${host}:${port}/${database}`;
 
-                const uri = `mongodb://${host}:27017/${database}`;
-
+                // const uri = `mongodb://127.0.0.1:27027/silla_link`;
+                // const uri = `mongodb://${host}:27017/${database}`;
                 const logger = new Logger('MongoDB');
                 logger.verbose('MongoDB URI:', uri);
                 return {

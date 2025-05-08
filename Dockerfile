@@ -1,37 +1,51 @@
-# Build stage
+# --------- Build stage ---------
 FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy only dependency files to cache dependencies
 COPY package.json yarn.lock ./
 
-# Install dependencies
-RUN yarn install --frozen-lockfile
+# Enable Yarn via Corepack
+RUN corepack enable
 
-# Copy source code
+# Install all dependencies (including dev)
+RUN yarn install
+
+RUN yarn global add dotenv-cli
+
+# Copy all source code
 COPY . .
 
-# Build the application
+# Build the app (NestJS compiles into dist/)
 RUN yarn build
 
-# Production stage
-FROM node:22-alpine
+
+# --------- Production stage ---------
+FROM node:22-alpine AS production
 
 WORKDIR /app
 
-# Copy package files and install production dependencies
-COPY package.json yarn.lock ./
-RUN yarn install --production --frozen-lockfile
+# Enable Yarn via Corepack
+RUN corepack enable
 
-# Copy built application from builder stage
+# Copy only necessary files
+COPY package.json yarn.lock ./
+
+# Install only production dependencies
+RUN yarn install
+
+RUN yarn global add dotenv-cli
+
+COPY . .
+
+# Copy built app from builder
 COPY --from=builder /app/dist ./dist
 
-# Copy environment file
 COPY development.env ./
 
-# Expose the port the app runs on
+# Expose the port used by the app
 EXPOSE 5000
 
-# Start the application
-CMD ["yarn", "start:prod"]
+# Start app in production mode (adjust this if needed)
+CMD ["yarn", "start:dev"]

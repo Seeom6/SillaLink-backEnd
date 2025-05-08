@@ -4,7 +4,7 @@ import * as path from 'path';
 
 @Injectable()
 export class EmailTemplateService {
-    private readonly templatesDir = path.join(process.cwd(),'templates');
+    private readonly templatesDir = path.join(process.cwd(),'templates',"email");
 
     async getWelcomeTemplate(otp: string): Promise<string> {
         return this.processTemplate('welcome.html', { otp });

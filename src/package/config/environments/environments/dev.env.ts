@@ -35,7 +35,8 @@ export const GetDevEnv = (): IDevEnv => ({
     jwtAccessToken: process.env.JWT_ACCESS_SECRET,
     jwtRefreshToken: process.env.JWT_REFRESH_SECRET,
     jwtExpiredRefresh: process.env.JWT_EXPIRED_REFRESH,
-    jwtExpiredAccess: process.env.JWT_EXPIRED_ACCESS
+    jwtExpiredAccess: process.env.JWT_EXPIRED_ACCESS,
+    refreshRedisExpired: +process.env.REFRESH_TOKEN_REDIS_EXPIERD,
   },
   mail: {
     host: process.env.MAIL_HOST, 
