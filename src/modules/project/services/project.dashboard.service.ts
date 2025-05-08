@@ -6,6 +6,8 @@ import { ProjectDocument } from '../database/project.schema';
 import { ProjectError } from './project.error';
 import { EnvironmentService } from '@Package/config';
 import {ErrorCode} from "../../../common/error/error-code";
+import {UserService} from "@Modules/user";
+import {User} from "@Package/api";
 
 @Injectable()
 export class ProjectService {
@@ -13,6 +15,7 @@ export class ProjectService {
     private readonly projectRepository: ProjectRepository,
     private readonly projectError: ProjectError,
     private readonly envService: EnvironmentService,
+    private readonly userService: UserService,
   ) {}
 
   async create(createProjectDto: CreateProjectDto): Promise<void> {
@@ -20,9 +23,13 @@ export class ProjectService {
     if (existingProject) {
       this.projectError.throw(ErrorCode.PROJECT_ALREADY_EXISTS);
     }
+    await Promise.all(createProjectDto.members.map(async (memberId)=>{
+      await this.userService.findById(memberId)
+    }))
     await this.projectRepository.create({
       ...createProjectDto,
     });
+    return;
   }
 
   async findOne(id: string): Promise<ProjectDocument> {
@@ -31,6 +38,9 @@ export class ProjectService {
         _id: id,
         isDeleted: false,
       },
+      options: {
+        populate: ['members']
+      }
     });
     if (!project) {
       this.projectError.throw(ErrorCode.PROJECT_NOT_FOUND);
@@ -47,7 +57,9 @@ export class ProjectService {
         this.projectError.throw(ErrorCode.PROJECT_ALREADY_EXISTS);
       }
     }
-
+    await Promise.all(updateProjectDto.members.map(async (memberId)=>{
+      await this.userService.findById(memberId)
+    }))
     const project = await this.projectRepository.update(id, updateProjectDto);
     if (!project) {
       this.projectError.throw(ErrorCode.PROJECT_NOT_FOUND);
@@ -61,11 +73,18 @@ export class ProjectService {
       filter: {
         isDeleted: false,
       },
+      options: {
+        populate: [
+          {
+            path: 'members',
+            model: User.name,
+          }
+        ],
+      }
     });
     projects.forEach((project) => {
       project.mainImage = `${this.envService.get('app.baseUrl')}/${project.mainImage}`;
       project.images = project.images.map((image)=>{
-        console.log(image)
         return `${this.envService.get('app.baseUrl')}/${image}`
       })
     });

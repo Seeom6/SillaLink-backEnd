@@ -9,6 +9,7 @@ export class GetAllEmployeeDto {
   image: string;
   startDate: Date;
   endDate: Date;
+  id: string;
   constructor(users: UserDocument) {
     this.fistName = users.firstName
     this.lastName = users.lastName
@@ -17,5 +18,6 @@ export class GetAllEmployeeDto {
     this.image = users.employee.image
     this.startDate = users.employee.startDate
     this.endDate = users.employee.endDate ?? null
+    this.id = users._id.toString() ;
   }
 }

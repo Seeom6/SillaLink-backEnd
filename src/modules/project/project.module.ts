@@ -8,9 +8,11 @@ import { ProjectRepository } from "./database/project.repository";
 import { ProjectError } from "./services/project.error";
 import { ProjectController } from "./api/controllers/project.controller";
 import { ProjectServiceWeb } from "./services/project.service";
+import { UserModule } from "@Modules/user";
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Project.name, schema: ProjectSchema }]),
+    UserModule
   ],
   controllers: [ProjectController, ProjectDashboardController],
   providers: [ProjectServiceWeb ,ProjectService, ProjectRepository, ProjectError],

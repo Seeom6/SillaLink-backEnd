@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
+import {User} from "@Modules/user";
+import {UserDocument} from "@Modules/user";
 
 export type ProjectDocument = Project & Document;
 
@@ -15,9 +17,6 @@ export class Project {
   description: string;
 
   @Prop({ type: [String], default: [] })
-  members: string[];
-
-  @Prop({ type: [String], default: [] })
   images: string[];
 
   @Prop({ type: String, default: '' })
@@ -28,6 +27,9 @@ export class Project {
 
   @Prop({ type: Boolean, default: false })
   isDeleted: boolean;
+
+  @Prop({type: [mongoose.Schema.Types.ObjectId], ref: User.name})
+  members: mongoose.Types.ObjectId[] | UserDocument[];
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project); 
