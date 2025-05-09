@@ -97,17 +97,17 @@ export class AuthService {
       const refresh: IRefreshToken = {
          userId: user._id.toString(),
       }
-      const tokens = await this.redisService.getByPattern(`${RedisKeys.REDIS_TOKEN}:${user._id.toString()}`)
+      const tokens = await this.redisService.getByPattern(`${RedisKeys.REFRESH_TOKEN}:${user._id.toString()}`)
       if(tokens.elements.length + 1 > TokenConstant.MAX_USER_TOKEN_COUNT){
          const olderToken = await this.getOldTokenInRedis(tokens.elements)
          await this.redisService.del([olderToken.token])
       }
       const accessToken = this.jwtService.sign(userPayload);
-      const refreshToken = this.jwtService.sign(refresh, {jwtid: jwtId, secret: this.environmentService.get("jwt.jwtRefreshToken"),expiresIn: this.environmentService.get("jwt.jwtExpiredRefresh")});
+      const refreshToken = this.jwtService.sign(refresh, {jwtid: jwtId, secret: this.environmentService.get("jwt.jwtAccessSecret"),expiresIn: this.environmentService.get("jwt.jwtExpiredRefresh")});
       await this.redisService.set(
-         `${RedisKeys.REDIS_TOKEN}:${user._id.toString()}:${jwtId}`,
+         `${RedisKeys.REFRESH_TOKEN}:${user._id.toString()}:${jwtId}`,
             refreshToken,
-            this.environmentService.get("jwt.refreshRedisExpired")
+            this.environmentService.get("jwt.ttlRefreshToken")
       );
 
       return {
@@ -208,15 +208,15 @@ export class AuthService {
    }
 
    async refreshToken(payload: IRefreshToken, res: Response){
-      const refreshRedisToken = await this.redisService.get<string>(`${RedisKeys.REDIS_TOKEN}:${payload.userId}:${payload.jti}`)
+      const refreshRedisToken = await this.redisService.get<string>(`${RedisKeys.REFRESH_TOKEN}:${payload.userId}:${payload.jti}`)
       if(!refreshRedisToken){
          this.authError.throw(ErrorCode.REFRESH_TOKEN_NOT_IN_REDIS);
       }
 
       const decodeToken: IRefreshToken = await this.jwtService.decode(refreshRedisToken);
       if(decodeToken.jti !== payload.jti){
-         await this.redisService.del([`${RedisKeys.REDIS_TOKEN}:${payload.userId}`])
-         res.cookie(`${RedisKeys.REDIS_TOKEN}`, null)
+         await this.redisService.del([`${RedisKeys.REFRESH_TOKEN}:${payload.userId}`])
+         res.cookie(`${RedisKeys.REFRESH_TOKEN}`, null)
          this.authError.throw(ErrorCode.INVALID_TOKEN);
       }
 
@@ -235,28 +235,32 @@ export class AuthService {
       }
 
       const accessToken = this.jwtService.sign(userPayload);
-      const refreshToken = this.jwtService.sign(refresh, {jwtid: jwtId, secret: this.environmentService.get("jwt.jwtRefreshToken"),expiresIn: this.environmentService.get("jwt.jwtExpiredRefresh")});
-      await this.redisService.del([`${RedisKeys.REDIS_TOKEN}:${user._id.toString()}`])
-      await this.redisService.set(`${RedisKeys.REDIS_TOKEN}:${user._id.toString()}`, refreshToken);
+      const refreshToken = this.jwtService.sign(refresh, {
+         jwtid: jwtId, 
+         secret: this.environmentService.get("jwt.jwtRefreshSecret"),
+         expiresIn: this.environmentService.get("jwt.jwtExpiredRefresh")
+      });
+      await this.redisService.del([`${RedisKeys.REFRESH_TOKEN}:${user._id.toString()}`])
+      await this.redisService.set(`${RedisKeys.REFRESH_TOKEN}:${user._id.toString()}`, refreshToken);
       return { accessToken, refreshToken: refreshToken };
    }
 
    async logOut(payload: IRefreshToken, res: Response){
-      const refreshRedisToken = await this.redisService.get<string>(`${RedisKeys.REDIS_TOKEN}:${payload.userId}:${payload.jti}`)
+      const refreshRedisToken = await this.redisService.get<string>(`${RedisKeys.REFRESH_TOKEN}:${payload.userId}:${payload.jti}`)
       if(!refreshRedisToken){
          this.authError.throw(ErrorCode.REFRESH_TOKEN_NOT_IN_REDIS);
       }
       const decodeToken: IRefreshToken = await this.jwtService.decode(refreshRedisToken);
-      const result = await this.redisService.getByPattern(`${RedisKeys.REDIS_TOKEN}:${payload.userId}`)
+      const result = await this.redisService.getByPattern(`${RedisKeys.REFRESH_TOKEN}:${payload.userId}`)
       await this.getOldTokenInRedis(result.elements)
       if(decodeToken.jti !== payload.jti){
-         const result = await this.redisService.getByPattern(`${RedisKeys.REDIS_TOKEN}:${payload.userId}`)
+         const result = await this.redisService.getByPattern(`${RedisKeys.REFRESH_TOKEN}:${payload.userId}`)
          await this.redisService.del(result.elements)
-         await this.redisService.del([`${RedisKeys.REDIS_TOKEN}:${payload.userId}`])
-         res.cookie(`${RedisKeys.REDIS_TOKEN}`, null)
+         await this.redisService.del([`${RedisKeys.REFRESH_TOKEN}:${payload.userId}`])
+         res.cookie(`${RedisKeys.REFRESH_TOKEN}`, null)
          this.authError.throw(ErrorCode.INVALID_TOKEN);
       }
-      await this.redisService.del([`${RedisKeys.REDIS_TOKEN}:${payload.userId}:${payload.jti}`])
+      await this.redisService.del([`${RedisKeys.REFRESH_TOKEN}:${payload.userId}:${payload.jti}`])
       return;
 
    }

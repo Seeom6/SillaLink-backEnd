@@ -4,7 +4,7 @@ logs
 
 dist
 
-*.env
+#*.env
 
 Dockerfile*
 .dockerignore

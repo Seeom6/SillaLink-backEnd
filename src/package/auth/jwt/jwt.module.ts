@@ -7,7 +7,7 @@ export const JWTModule = JwtModule.registerAsync({
   inject: [EnvironmentService],
   useFactory: (envService: EnvironmentService)=>{
     return {
-      secret: envService.get("jwt.jwtAccessToken"),
+      secret: envService.get("jwt.jwtAccessSecret"),
       signOptions: {
         expiresIn: envService.get("jwt.jwtExpiredAccess"),
       }

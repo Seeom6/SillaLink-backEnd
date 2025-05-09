@@ -28,7 +28,7 @@ export class AuthController {
    @Post('log-in')
    async logIn(@Body(LogInValidationPipe) logInInfo: LogInDto, @Res({passthrough: true}) res: Response ) {
       const tokens = await this.authService.logIn(logInInfo);
-      res.cookie(RedisKeys.REDIS_TOKEN, tokens.refreshToken, {httpOnly: true});
+      res.cookie(RedisKeys.REFRESH_TOKEN, tokens.refreshToken, {httpOnly: true});
       return {
          accessToken: tokens.refreshToken
       }
@@ -85,7 +85,7 @@ export class RefreshController {
    @Post('refresh')
    async refreshToken(@RefreshPayload() payload: IRefreshToken, @Res({passthrough: true}) res: Response) {
       const tokens = await this.authService.refreshToken(payload, res)
-      res.cookie(RedisKeys.REDIS_TOKEN, tokens.refreshToken, {httpOnly: true});
+      res.cookie(RedisKeys.REFRESH_TOKEN, tokens.refreshToken, {httpOnly: true});
       return {
          accessToken: tokens.accessToken
       }
@@ -94,7 +94,7 @@ export class RefreshController {
    @Post("log-out")
    async logout(@RefreshPayload() payload: IRefreshToken, @Res({passthrough: true}) res: Response){
       await this.authService.logOut(payload, res)
-      res.clearCookie(RedisKeys.REDIS_TOKEN);
+      res.clearCookie(RedisKeys.REFRESH_TOKEN);
       return;
    }
 }

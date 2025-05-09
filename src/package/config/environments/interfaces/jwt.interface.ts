@@ -1,8 +1,8 @@
 
 export interface IJWTEnv {
-  jwtAccessToken: string;
-  jwtRefreshToken: string;
+  jwtAccessSecret: string;
+  jwtRefreshSecret: string;
   jwtExpiredAccess: string;
   jwtExpiredRefresh: string;
-  refreshRedisExpired: number;
+  ttlRefreshToken: number;
 }

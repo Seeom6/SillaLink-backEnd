@@ -44,6 +44,8 @@ COPY --from=builder /app/dist ./dist
 
 COPY development.env ./
 
+COPY development.env ./seeders
+
 # Expose the port used by the app
 EXPOSE 5000
 

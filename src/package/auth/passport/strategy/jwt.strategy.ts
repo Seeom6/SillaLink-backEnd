@@ -10,7 +10,7 @@ export class JWTStrategy extends PassportStrategy(Strategy, StrategyConstant.jwt
   constructor(
     private readonly environmentService: EnvironmentService,
   ) {
-    const secretKey = environmentService.get('jwt.jwtAccessToken');
+    const secretKey = environmentService.get('jwt.jwtAccessSecret');
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
