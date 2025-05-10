@@ -5,8 +5,9 @@ services:
       build: .
       ports:
         - "5000:5000"
-      environment:
-        - ./development.env
+      env_file:
+        - path: ./development.env
+          required: true
       depends_on:
         mongodb:
           condition: service_healthy
