@@ -20,11 +20,6 @@ export class AuthController {
       private readonly authService: AuthService,
    ){}
 
-   @Post('sign-in')
-   async signIn(@Body(SingInValidationPipe) signInInfo: SingInDto) {
-      return await this.authService.signIn(signInInfo);
-   }
-
    @Post('log-in')
    async logIn(@Body(LogInValidationPipe) logInInfo: LogInDto, @Res({passthrough: true}) res: Response ) {
       const tokens = await this.authService.logIn(logInInfo);
@@ -34,10 +29,6 @@ export class AuthController {
       }
    }
 
-   @Post('request-password-reset')
-   async requestPasswordReset(@Body(RequestPasswordResetValidationPipe) body: { email: string }) {
-      return await this.authService.requestPasswordReset(body.email);
-   }
 }
 
 @AuthControllerWeb({prefix: "auth"})
