@@ -20,6 +20,18 @@ export class AuthController {
       private readonly authService: AuthService,
    ){}
 
+   @Post("sign-in")
+   async singIn(
+      @Body() body: SingInDto,
+      @Res({passthrough: true}) res: Response 
+   ){
+      const tokens = await this.authService.signIn(body)
+      res.cookie(RedisKeys.REFRESH_TOKEN, tokens.refreshToken, {httpOnly: true});
+      return {
+         accessToken: tokens.accessToken
+      }
+   }
+   
    @Post('log-in')
    async logIn(@Body(LogInValidationPipe) logInInfo: LogInDto, @Res({passthrough: true}) res: Response ) {
       const tokens = await this.authService.logIn(logInInfo);

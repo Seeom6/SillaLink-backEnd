@@ -37,7 +37,9 @@ export class AuthService {
       if(isExist) {
          this.authError.throw(ErrorCode.USER_ALREADY_EXISTS);
       }
-      let token: string;
+      let accessToken: string;
+      let refresh: IRefreshToken;
+      let refreshToken: string;
       const session = await this.connection.startSession()
       await session.withTransaction(async(session)=>{
          const hashedPassword = await HashService.hashPassword(userSignInInfo.password);
@@ -55,18 +57,29 @@ export class AuthService {
             role: user.role
          };
    
-         token = this.jwtService.sign(userPayload);
+         accessToken = this.jwtService.sign(userPayload);
+         refresh = {
+            userId: user._id.toString(),
+         }
          const otp = generateOTP();
-   
+         const jwtId = uuidv4()
+
          await this.redisService.set(`otp:${user.email}`, otp, 30000000); 
+         refreshToken = this.jwtService.sign(refresh, {jwtid: jwtId, secret: this.environmentService.get("jwt.jwtAccessSecret"),expiresIn: this.environmentService.get("jwt.jwtExpiredRefresh")});
+         await this.redisService.set(
+            `${RedisKeys.REFRESH_TOKEN}:${user._id.toString()}:${jwtId}`,
+               refreshToken,
+               this.environmentService.get("jwt.ttlRefreshToken")
+         );
    
          await this.mailService.sendSingInOTP(user.email, otp);
          console.log("OTP has been sent to your email")
       })
 
+
       return {
-         access_token: token,
-         message: 'OTP has been sent to your email'
+         accessToken: accessToken,
+         refreshToken: refreshToken,
       };
    }
 

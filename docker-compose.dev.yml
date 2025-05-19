@@ -1,5 +1,6 @@
 services:
   app:
+    container_name: silla_link_development
     build:
       context: .
       target: development

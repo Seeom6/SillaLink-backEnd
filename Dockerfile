@@ -5,7 +5,7 @@ WORKDIR /app
 
 COPY package.json yarn.lock ./
 
-RUN corepack enable && yarn install && yarn add dotenv-cli --global
+RUN corepack enable && yarn install
 
 COPY . .
 
@@ -21,13 +21,15 @@ RUN corepack enable
 
 COPY package.json yarn.lock ./
 
-RUN yarn install && yarn add dotenv-cli --global
+RUN yarn install && yarn add dotenv-cli
 
 COPY . .
 
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 5000
+
+ENV NODE_ENV=development
 
 CMD ["yarn", "start:dev"]
 
@@ -43,7 +45,7 @@ RUN corepack enable
 
 COPY package.json yarn.lock ./
 
-RUN yarn install --production && yarn add dotenv-cli --global   
+RUN yarn install --production && yarn add dotenv-cli
 
 COPY --from=builder /app/dist ./dist
 

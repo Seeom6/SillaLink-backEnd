@@ -4,7 +4,8 @@
   "compilerOptions": {
     "paths": {
       "@Package/*": ["./src/package/*"],
-      "@Modules/*": ["./src/modules/*"]
+      "@Modules/*": ["./src/modules/*"],
+      "@Common/*": ["./src/common/*"]
     }
   }
 }
