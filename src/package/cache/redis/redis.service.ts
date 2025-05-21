@@ -5,16 +5,18 @@ import {TokenConstant} from "../../../common/auth/token.constant";
 
 @Injectable()
 export class RedisService implements OnModuleDestroy {
-    private readonly redis: Redis;
+    private redis: Redis;
     private readonly logger = new Logger(RedisService.name);
 
     constructor(
         private readonly envService: EnvironmentService
-    ) {
+    ) {}
+
+    async connect(){
         this.redis = new Redis({
-            host: envService.get("redis.host"),
-            port: envService.get("redis.port"),
-            db: envService.get("redis.databaseIndex"),
+            host: this.envService.get("redis.host"),
+            port: this.envService.get("redis.port"),
+            db: this.envService.get("redis.databaseIndex"),
         });
 
         this.redis.on('connect', () => {
@@ -25,7 +27,6 @@ export class RedisService implements OnModuleDestroy {
             this.logger.error(`❌ Redis connection error: ${err.message}`);
         });
     }
-
     async set(key: string, value: any, ttl?: number): Promise<void> {
         const val = typeof value === 'object' ? JSON.stringify(value) : value;
         await this.redis.set(key, val);

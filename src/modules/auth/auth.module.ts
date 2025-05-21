@@ -13,12 +13,13 @@ import { AuthAdminController } from './api/controllers/auth.admin.controller';
 import {RefreshTokenGuard} from "@Package/auth/guards";
 import {RefreshTokenStrategy} from "@Package/auth/passport/strategy/refresh-token.strategy";
 import {StrategyConstant} from "@Package/auth";
-import {RedisService} from "@Package/cache";
+import {RedisModule, RedisService} from "@Package/cache";
 @Module({
   imports: [
     UserModule,
     PassportModule.register({ defaultStrategy: [StrategyConstant.refresh_Token, StrategyConstant.jwt, ] }),
-    JWTModule
+    JWTModule,
+    RedisModule,
   ],
   controllers: [
     AuthController,
@@ -34,7 +35,6 @@ import {RedisService} from "@Package/cache";
     MailService,
     JwtAuthGuard,
     RefreshTokenGuard,
-    RedisService,
     RefreshTokenStrategy
   ],
   exports: [JWTStrategy, PassportModule]
